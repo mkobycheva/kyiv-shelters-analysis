@@ -23,7 +23,7 @@ h1, h2, h3 { font-weight: 600; }
 # ── Data loading ───────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data():
-    filepath = '/Users/masha/shelters-analysis/kyiv_shelters.json'
+    filepath = 'kyiv_shelters.json'
     with open(filepath, encoding="utf-8") as f:
         data = json.load(f)
 
@@ -210,7 +210,7 @@ def build_aggregates(df):
 df = load_data()
 agg = build_aggregates(df)
 
-with open("/Users/masha/shelters-analysis/kyiv.34272c8c.geojson", encoding="utf-8") as f:
+with open("kyiv.34272c8c.geojson", encoding="utf-8") as f:
     geojson = json.load(f)
 
 for feat in geojson["features"]:
