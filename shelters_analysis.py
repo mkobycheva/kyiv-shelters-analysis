@@ -35,6 +35,14 @@ st.markdown("""
     background: none !important;
     height: 0 !important;
 }
+
+[data-testid="stSidebarCollapsedControl"] svg {
+    display: none;
+}
+[data-testid="stSidebarCollapsedControl"]::after {
+    content: "☰";
+    font-size: 1.2rem;
+}
 </style>
 """, unsafe_allow_html=True)
 
