@@ -24,10 +24,6 @@ st.markdown("""
     box-shadow: none !important;
 }
 
-[data-testid="collapsedControl"] {
-    display: none !important;
-}
-
 [data-testid="stAppViewContainer"] > .main > .block-container {
     padding-top: 0 !important;
     padding-left: 0 !important;
@@ -268,6 +264,9 @@ if section == "Місткість":
     }
     </style>
     """, unsafe_allow_html=True)
+
+    st.title("Чи вміщається Київ в укриття?")
+    st.caption("Аналіз стану і доступності захисних споруд за даними з відкритих джерел")
 
     kyiv = agg["kyiv_cap"].iloc[0]
     c1, c2, c3, c4, c5 = st.columns(5)

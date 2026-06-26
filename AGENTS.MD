@@ -114,8 +114,11 @@ Font: Montserrat via Google Fonts, applied with `* { font-family: 'Montserrat', 
 Key CSS overrides (all in one `st.markdown` block at the top):
 
 - `[data-testid="metric-container"]` — removes border/shadow from metric cards
-- `[data-testid="collapsedControl"]` — hides sidebar collapse arrow
 - `[data-testid="stAppViewContainer"] > .main > .block-container` — removes top/side padding globally; padding is restored inside content sections
+
+The sidebar collapse/expand control should remain visible so users can reopen navigation if they close it.
+
+The "Місткість" section starts with the title `Чи вміщається Київ в укриття?` and the subtitle `Аналіз стану і доступності захисних споруд за даними з відкритих джерел`.
 
 ## Known Issues / Watch Out For
 
