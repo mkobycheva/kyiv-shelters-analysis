@@ -1,4 +1,5 @@
 import json
+import base64
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -10,7 +11,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# ── Custom font (Google Fonts) ─────────────────────────────────────────────────
+# ── Custom font + global styles ───────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
@@ -28,18 +29,34 @@ st.markdown("""
     display: none !important;
 }
 
+[data-testid="stAppViewContainer"] > .main > .block-container {
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 100% !important;
+}
+
+[data-testid="stHeader"] {
+    display: none !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
-import base64
+# ── Header image ──────────────────────────────────────────────────────────────
 with open("header.png", "rb") as f:
     img_b64 = base64.b64encode(f.read()).decode()
+
 st.markdown(f"""
 <div style="position:relative; margin-bottom:2rem;">
-    <img src="data:image/jpeg;base64,{img_b64}" style="width:100%; height:350px; object-fit:cover; border-radius:8px;">
-    <div style="position:absolute; bottom:2rem; left:2rem; color:white;">
-        <h1 style="font-size:2.5rem; margin:0; text-shadow:0 2px 8px rgba(0,0,0,0.7);">Чи вміщається Київ в укриття?</h1>
-        <p style="margin:0.5rem 0 0; text-shadow:0 1px 4px rgba(0,0,0,0.7);">Аналіз стану і доступності захисних споруд за даними з відкритих джерел</p>
+    <img src="data:image/png;base64,{img_b64}"
+         style="width:100%; height:420px; object-fit:cover; display:block;">
+    <div style="
+        position:absolute; inset:0;
+        background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+    "></div>
+    <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:white;">
+        <h1 style="font-size:2.5rem; margin:0; font-family:'Montserrat',sans-serif; font-weight:700;">Чи вміщається Київ в укриття?</h1>
+        <p style="margin:0.5rem 0 0; font-size:1rem; font-family:'Montserrat',sans-serif;">Аналіз стану і доступності захисних споруд за даними з відкритих джерел</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -241,7 +258,6 @@ for feat in geojson["features"]:
     feat["properties"]["district"] = feat["properties"]["NAME"].replace(" район", "")
 
 # ── Sidebar nav ───────────────────────────────────────────────────────────────
-# st.sidebar.title("Укриття Києва")
 section = st.sidebar.radio(
     "Розділ",
     ["Місткість", "Типи укриттів", "Стан систем", "Доступність і відкритість"],
@@ -252,17 +268,21 @@ section = st.sidebar.radio(
 # ══════════════════════════════════════════════════════════════════════════════
 if section == "Місткість":
 
-    # ── Header image ─────────────────────────────────────────────────────────
-    # Заміни шлях на свій файл або URL
-    st.image("header.png", use_container_width=True)
-
-    st.title("Чи вміщається Київ в укриття?")
-    st.markdown("Аналіз стану і доступності захисних споруд за даними з відкритих джерел")
-    st.divider()
+    # padding back for content sections
+    st.markdown("""
+    <style>
+    [data-testid="stAppViewContainer"] > .main > .block-container {
+        padding-left: 3rem !important;
+        padding-right: 3rem !important;
+        padding-bottom: 3rem !important;
+        max-width: 100% !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     kyiv = agg["kyiv_cap"].iloc[0]
     c1, c2, c3, c4, c5 = st.columns(5)
-    c1.metric("Кількість укриттів, шт.", f"{kyiv['shelter_count']:,}")
+    c1.metric("Кількість укриттів, шт.", f"{int(kyiv['shelter_count']):,}")
     c2.metric("Загальна місткість, осіб", f"{int(kyiv['total_capacity']):,}")
     c3.metric("Кількість населення, осіб", f"{int(kyiv['population']):,}")
     c4.metric("Людей на 1 місце", f"{kyiv['population_by_capacity']:.1f}")
@@ -273,7 +293,6 @@ if section == "Місткість":
 
     cap = agg["district_cap"].copy()
 
-    # tooltip extras
     kinds_wide = (
         agg["district_shelter_kinds"]
         .pivot(index="district", columns="shelter_kind", values="percent")
@@ -286,11 +305,9 @@ if section == "Місткість":
     cap = cap.merge(kinds_wide, on="district", how="left")
     cap = cap.merge(mgn_tooltip, on="district", how="left")
 
-    # ── Map + bar side by side ────────────────────────────────────────────────
     map_col, bar_col = st.columns([3, 1])
 
     with map_col:
-        # Choropleth
         fig_choro = px.choropleth_mapbox(
             cap,
             geojson=geojson,
@@ -299,7 +316,7 @@ if section == "Місткість":
             color="population_by_capacity",
             color_continuous_scale="RdYlGn_r",
             mapbox_style="carto-positron",
-            zoom=9,                          # ← zoom out to fit all districts
+            zoom=9,
             center={"lat": 50.45, "lon": 30.52},
             opacity=0.65,
             hover_name="district",
@@ -315,7 +332,6 @@ if section == "Місткість":
             },
         )
 
-        # All shelters as tiny dots on top
         df_pts = df.dropna(subset=["lat", "lon"])
         fig_choro.add_trace(go.Scattermapbox(
             lat=df_pts["lat"],
@@ -335,10 +351,7 @@ if section == "Місткість":
         st.plotly_chart(fig_choro, use_container_width=True)
 
     with bar_col:
-        # м² на людину, sorted worst→best
         bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person")
-
-        # Match colorscale to choropleth (RdYlGn_r reversed → low = red)
         fig_bar = px.bar(
             bar_df,
             x="area_per_person",
@@ -463,12 +476,11 @@ elif section == "Стан систем":
     st.plotly_chart(fig_heat, use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 4. ДОСТУПНІСТЬ І ВІДКРИТІСТЬ (об'єднано)
+# 4. ДОСТУПНІСТЬ І ВІДКРИТІСТЬ
 # ══════════════════════════════════════════════════════════════════════════════
 elif section == "Доступність і відкритість":
     st.title("Доступність і відкритість укриттів")
 
-    # ── MGN ──────────────────────────────────────────────────────────────────
     st.subheader("Доступність для маломобільних груп населення (МГН)")
 
     total_mgn = agg["df_total_mgn"]
@@ -496,7 +508,6 @@ elif section == "Доступність і відкритість":
 
     st.divider()
 
-    # ── Open access ───────────────────────────────────────────────────────────
     st.subheader("Відкритість укриттів")
 
     oa_col1, oa_col2 = st.columns([2, 1])
