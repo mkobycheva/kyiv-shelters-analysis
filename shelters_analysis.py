@@ -6,6 +6,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Аналіз укриттів Києва",
+    page_icon="🏠",
     layout="wide",
 )
 
@@ -16,6 +17,11 @@ st.markdown("""
 
 * {
     font-family: 'Montserrat', sans-serif !important;
+}
+
+[data-testid="metric-container"] {
+    border: none !important;
+    box-shadow: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -217,7 +223,7 @@ for feat in geojson["features"]:
     feat["properties"]["district"] = feat["properties"]["NAME"].replace(" район", "")
 
 # ── Sidebar nav ───────────────────────────────────────────────────────────────
-st.sidebar.title("Укриття Києва")
+# st.sidebar.title("Укриття Києва")
 section = st.sidebar.radio(
     "Розділ",
     ["Місткість", "Типи укриттів", "Стан систем", "Доступність і відкритість"],
@@ -230,18 +236,19 @@ if section == "Місткість":
 
     # ── Header image ─────────────────────────────────────────────────────────
     # Заміни шлях на свій файл або URL
-    # st.image("header.jpg", use_container_width=True)
+    st.image("IMG_3530.JPG", use_container_width=True)
 
     st.title("Чи вміщається Київ в укриття?")
     st.markdown("Аналіз стану і доступності захисних споруд за даними з відкритих джерел")
     st.divider()
 
     kyiv = agg["kyiv_cap"].iloc[0]
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Укриттів у Києві", f"{kyiv['shelter_count']:,}")
-    c2.metric("Загальна місткість", f"{int(kyiv['total_capacity']):,}")
-    c3.metric("Людей на 1 місце", f"{kyiv['population_by_capacity']:.1f}")
-    c4.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}")
+    c1, c2, c3, c4, c5 = st.columns(5)
+    c1.metric("Кількість укриттів у Києві, шт.", f"{kyiv['shelter_count']:,}")
+    c2.metric("Загальна місткість, осіб", f"{int(kyiv['total_capacity']):,}")
+    c3.metric("Кількість населення, осіб", f"{int(kyiv['total_capacity']):,}")
+    c4.metric("Людей на 1 місце", f"{kyiv['population']}")
+    c5.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}")
 
     st.divider()
     st.subheader("Місткість укриттів по районах")
@@ -262,7 +269,7 @@ if section == "Місткість":
     cap = cap.merge(mgn_tooltip, on="district", how="left")
 
     # ── Map + bar side by side ────────────────────────────────────────────────
-    map_col, bar_col = st.columns([3, 2])
+    map_col, bar_col = st.columns([3, 1])
 
     with map_col:
         # Choropleth
