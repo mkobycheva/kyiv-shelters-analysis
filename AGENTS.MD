@@ -11,7 +11,7 @@ kyiv-shelters-analysis/
 ├── shelters_analysis.py      # Main Streamlit app
 ├── kyiv_shelters.json        # Raw shelter data (source of truth)
 ├── kyiv.34272c8c.geojson     # Kyiv district boundaries (10 districts)
-├── header.png                # Hero image for the landing section
+├── header.png                # Unused image asset retained in the repo
 ├── .gitignore                # Contains .idea/
 └── AGENTS.md
 ```
@@ -64,15 +64,17 @@ district_population_data = {
 }
 ```
 
-⚠️ The apostrophe in `"Солом'янський"` must be a straight apostrophe (`'`), not a curly one (`'`). If the district shows no color on the map, this is the likely cause — retype the key manually.
+District names are normalized with `normalize_district_name()` so curly apostrophes in the raw data and GeoJSON match the straight apostrophe in `"Солом'янський"`.
 
 ### GeoJSON
 
-Districts in the GeoJSON have `NAME` like `"Солом'янський район"`. The app strips `" район"` to join with data:
+Districts in the GeoJSON have `NAME` like `"Солом’янський район"`. The app strips `" район"` and normalizes apostrophes to join with data:
 
 ```python
 for feat in geojson["features"]:
-    feat["properties"]["district"] = feat["properties"]["NAME"].replace(" район", "")
+    feat["properties"]["district"] = normalize_district_name(
+        feat["properties"]["NAME"].replace(" район", "")
+    )
 ```
 
 ### Aggregates (built in `build_aggregates(df)`)
@@ -109,21 +111,18 @@ Map config: `zoom=9`, `center={"lat": 50.45, "lon": 30.52}`, `mapbox_style="cart
 
 Font: Montserrat via Google Fonts, applied with `* { font-family: 'Montserrat', sans-serif !important; }` in `st.markdown`.
 
-Hero image: `header.png` loaded as base64, rendered as full-bleed HTML div with gradient overlay (`linear-gradient(to top, rgba(0,0,0,0.7), transparent)`) and title text positioned bottom-left.
-
 Key CSS overrides (all in one `st.markdown` block at the top):
 
 - `[data-testid="metric-container"]` — removes border/shadow from metric cards
 - `[data-testid="collapsedControl"]` — hides sidebar collapse arrow
-- `[data-testid="stAppViewContainer"] > .main > .block-container` — removes padding for full-bleed hero; padding is restored inside content sections
+- `[data-testid="stAppViewContainer"] > .main > .block-container` — removes top/side padding globally; padding is restored inside content sections
 
 ## Known Issues / Watch Out For
 
-- `"Солом'янський"` apostrophe type mismatch breaks map color and bar chart for that district
+- Preserve district-name normalization for `"Солом'янський"`; otherwise apostrophe mismatches can break map color and chart values for that district
 - `lat` field in raw JSON is a string with occasional trailing `, ` — must be stripped before numeric conversion
 - `st.columns(5)` must match exactly 5 unpacking variables for the metrics row
 - The `comm_report` good-label column is `"Є інтернет (Wi-Fi/Дротовий) (%)"` — check this key exists before accessing
-- Header image only shows on the "Місткість" section (intentional)
 
 ## Deployment
 

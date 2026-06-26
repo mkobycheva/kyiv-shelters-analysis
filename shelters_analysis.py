@@ -1,5 +1,4 @@
 import json
-import base64
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -39,41 +38,14 @@ st.markdown("""
 [data-testid="stHeader"] {
     display: none !important;
 }
-
-.hero-image {
-    position: relative;
-    width: 100vw;
-    margin: 0 0 1.5rem calc(50% - 50vw);
-    overflow: hidden;
-}
-
-.hero-image img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    display: block;
-}
 </style>
 """, unsafe_allow_html=True)
 
-# ── Header image ──────────────────────────────────────────────────────────────
-with open("header.png", "rb") as f:
-    img_b64 = base64.b64encode(f.read()).decode()
 
-st.markdown(f"""
-<div class="hero-image">
-    <img src="data:image/png;base64,{img_b64}"
-         alt="">
-    <div style="
-        position:absolute; inset:0;
-        background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
-    "></div>
-    <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:white;">
-        <h1 style="font-size:2.5rem; margin:0; font-family:'Montserrat',sans-serif; font-weight:700;">Чи вміщається Київ в укриття?</h1>
-        <p style="margin:0.5rem 0 0; font-size:1rem; font-family:'Montserrat',sans-serif;">Аналіз стану і доступності захисних споруд за даними з відкритих джерел</p>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+def normalize_district_name(name):
+    if not isinstance(name, str):
+        return name
+    return name.replace("’", "'").replace("‘", "'")
 
 # ── Data loading ───────────────────────────────────────────────────────────────
 @st.cache_data
@@ -113,6 +85,7 @@ def load_data():
         })
 
     df = pd.DataFrame(rows)
+    df["district"] = df["district"].apply(normalize_district_name)
     df['lat'] = pd.to_numeric(df['lat'].astype(str).str.rstrip(', '), errors='coerce')
     df['lon'] = pd.to_numeric(df['lon'], errors='coerce')
     df['accessible_mgn'] = df['accessible_mgn'].fillna(False).astype(bool)
@@ -269,7 +242,9 @@ with open("kyiv.34272c8c.geojson", encoding="utf-8") as f:
     geojson = json.load(f)
 
 for feat in geojson["features"]:
-    feat["properties"]["district"] = feat["properties"]["NAME"].replace(" район", "")
+    feat["properties"]["district"] = normalize_district_name(
+        feat["properties"]["NAME"].replace(" район", "")
+    )
 
 # ── Sidebar nav ───────────────────────────────────────────────────────────────
 section = st.sidebar.radio(
