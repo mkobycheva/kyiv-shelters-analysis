@@ -5,18 +5,14 @@ import plotly.graph_objects as go
 import streamlit as st
 
 st.set_page_config(
-    page_title="Чи вміщається Київ в укриття?",
+    page_title="Аналіз укриттів Києва",
     layout="wide",
 )
 
 # ── Custom font (Google Fonts) ─────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
-h1, h2, h3 { font-weight: 600; }
+@import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&display=swap');
 </style>
 """, unsafe_allow_html=True)
 
