@@ -39,6 +39,20 @@ st.markdown("""
 [data-testid="stHeader"] {
     display: none !important;
 }
+
+.hero-image {
+    position: relative;
+    width: 100vw;
+    margin: 0 0 1.5rem calc(50% - 50vw);
+    overflow: hidden;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -47,9 +61,9 @@ with open("header.png", "rb") as f:
     img_b64 = base64.b64encode(f.read()).decode()
 
 st.markdown(f"""
-<div style="position:relative; margin-bottom:2rem;">
+<div class="hero-image">
     <img src="data:image/png;base64,{img_b64}"
-         style="width:100%; height:420px; object-fit:cover; display:block;">
+         alt="">
     <div style="
         position:absolute; inset:0;
         background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
