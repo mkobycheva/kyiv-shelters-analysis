@@ -236,7 +236,7 @@ if section == "Місткість":
 
     # ── Header image ─────────────────────────────────────────────────────────
     # Заміни шлях на свій файл або URL
-    st.image("IMG_3530.JPG", use_container_width=True)
+    st.image("header.png", use_container_width=True)
 
     st.title("Чи вміщається Київ в укриття?")
     st.markdown("Аналіз стану і доступності захисних споруд за даними з відкритих джерел")
@@ -244,10 +244,10 @@ if section == "Місткість":
 
     kyiv = agg["kyiv_cap"].iloc[0]
     c1, c2, c3, c4, c5 = st.columns(5)
-    c1.metric("Кількість укриттів у Києві, шт.", f"{kyiv['shelter_count']:,}")
+    c1.metric("Кількість укриттів, шт.", f"{kyiv['shelter_count']:,}")
     c2.metric("Загальна місткість, осіб", f"{int(kyiv['total_capacity']):,}")
-    c3.metric("Кількість населення, осіб", f"{int(kyiv['total_capacity']):,}")
-    c4.metric("Людей на 1 місце", f"{kyiv['population']}")
+    c3.metric("Кількість населення, осіб", f"{kyiv['population']}")
+    c4.metric("Людей на 1 місце", f"{kyiv['population_by_capacity']:.1f}")
     c5.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}")
 
     st.divider()
