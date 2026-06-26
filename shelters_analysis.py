@@ -23,7 +23,25 @@ st.markdown("""
     border: none !important;
     box-shadow: none !important;
 }
+
+[data-testid="collapsedControl"] {
+    display: none !important;
+}
+
 </style>
+""", unsafe_allow_html=True)
+
+import base64
+with open("header.png", "rb") as f:
+    img_b64 = base64.b64encode(f.read()).decode()
+st.markdown(f"""
+<div style="position:relative; margin-bottom:2rem;">
+    <img src="data:image/jpeg;base64,{img_b64}" style="width:100%; height:350px; object-fit:cover; border-radius:8px;">
+    <div style="position:absolute; bottom:2rem; left:2rem; color:white;">
+        <h1 style="font-size:2.5rem; margin:0; text-shadow:0 2px 8px rgba(0,0,0,0.7);">Чи вміщається Київ в укриття?</h1>
+        <p style="margin:0.5rem 0 0; text-shadow:0 1px 4px rgba(0,0,0,0.7);">Аналіз стану і доступності захисних споруд за даними з відкритих джерел</p>
+    </div>
+</div>
 """, unsafe_allow_html=True)
 
 # ── Data loading ───────────────────────────────────────────────────────────────
@@ -246,7 +264,7 @@ if section == "Місткість":
     c1, c2, c3, c4, c5 = st.columns(5)
     c1.metric("Кількість укриттів, шт.", f"{kyiv['shelter_count']:,}")
     c2.metric("Загальна місткість, осіб", f"{int(kyiv['total_capacity']):,}")
-    c3.metric("Кількість населення, осіб", f"{kyiv['population']}")
+    c3.metric("Кількість населення, осіб", f"{int(kyiv['population']):,}")
     c4.metric("Людей на 1 місце", f"{kyiv['population_by_capacity']:.1f}")
     c5.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}")
 
