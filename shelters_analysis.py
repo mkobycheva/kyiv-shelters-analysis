@@ -366,7 +366,7 @@ if section == "Місткість":
         lat=df_pts["lat"],
         lon=df_pts["lon"],
         mode="markers",
-        marker=dict(size=3, color="#1a1a2e", opacity=0.5),
+        marker=dict(size=3, color="#1a1a2e", opacity=0.4),
         hoverinfo="skip",
         showlegend=False,
         name="",
@@ -390,7 +390,7 @@ if section == "Місткість":
         color_continuous_scale="Peach",
         text="area_per_person",
         category_orders={"district": district_order},
-        labels={"area_per_person": "М² на людину", "district": "Район"},
+        # labels={"area_per_person": "М² на людину", "district": "Район"},
         height=420,
     )
     fig_bar.update_traces(texttemplate="%{text:.2f} м²", textposition="outside")
@@ -398,7 +398,7 @@ if section == "Місткість":
         coloraxis_showscale=False,
         margin=dict(l=0, r=80, t=30, b=0),
         title=dict(text="М² укриття на людину:", font=dict(size=14)),
-        yaxis=dict(tickfont=dict(size=12), autorange="reversed"),
+        yaxis=dict(tickfont=dict(size=12)),
     )
     st.plotly_chart(fig_bar, use_container_width=True)
 
