@@ -339,9 +339,9 @@ if section == "Місткість":
         featureidkey="properties.district",
         color="population_by_capacity",
         color_continuous_scale="OrRd",
-        mapbox_style="carto-darkmatter",
+        mapbox_style="carto-positron",
         zoom=9,
-        center={"lat": 50.45, "lon": 30.52},
+        center={"lat": 50.465, "lon": 30.52},
         opacity=0.5,
         hover_name="district",
         hover_data={
