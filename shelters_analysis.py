@@ -15,15 +15,7 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-body,
-button,
-input,
-textarea,
-select,
-[data-testid="stMarkdownContainer"],
-[data-testid="stMetric"],
-[data-testid="stSidebar"],
-[data-testid="stRadio"] {
+*:not(.material-icons):not(.material-symbols-outlined):not(.material-symbols-rounded):not(.material-symbols-sharp):not([class*="material-symbols"]):not([translate="no"]):not([aria-hidden="true"]) {
     font-family: 'Montserrat', sans-serif !important;
 }
 
