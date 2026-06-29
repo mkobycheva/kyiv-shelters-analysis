@@ -366,7 +366,7 @@ if section == "Місткість":
         lat=df_pts["lat"],
         lon=df_pts["lon"],
         mode="markers",
-        marker=dict(size=3, color="black", opacity=0.5),
+        marker=dict(size=3, color="#1a1a2e", opacity=0.5),
         hoverinfo="skip",
         showlegend=False,
         name="",
