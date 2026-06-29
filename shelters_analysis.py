@@ -351,9 +351,14 @@ if section == "Місткість":
             "district": False,
         },
         labels={
-            "population_by_capacity": "Людей на місце ",
-            "shelter_count": "Укриттів ",
+            "population_by_capacity": "Людей на місце",
+            "shelter_count": "Укриттів",
         },
+    )
+
+    fig_choro.update_traces(
+        marker_line_width=0.5,
+        marker_line_color="grey",
     )
 
     df_pts = df.dropna(subset=["lat", "lon"])
