@@ -405,14 +405,40 @@ elif section == "Типи укриттів":
         ("Призначення", "functional_purpose_group", "district_functional", "kyiv_functional"),
     ]
 
+    def aggregate_kpi_row(heading, kyiv_df):
+        if heading == "Вид споруди":
+            order = ["Найпростіше укриття", "Сховище", "Інше"]
+            kpi_df = kyiv_df.copy()
+            kpi_df["Тип"] = kpi_df["Тип"].where(kpi_df["Тип"].isin(order[:2]), "Інше")
+        elif heading == "Призначення":
+            order = ["Підвали та техприміщення", "Не визначено", "Інше"]
+            purpose_labels = {
+                "Як приміщення іншого призначення": "Підвали та техприміщення",
+                "Не застосовується": "Не визначено",
+            }
+            kpi_df = kyiv_df.copy()
+            kpi_df["Тип"] = kpi_df["Тип"].map(purpose_labels).fillna("Інше")
+        else:
+            return kyiv_df.head(4)
+
+        kpi_df = (
+            kpi_df.groupby("Тип", as_index=False)
+            .agg(shelter_count=("shelter_count", "sum"))
+        )
+        total = kpi_df["shelter_count"].sum()
+        kpi_df["percent"] = (kpi_df["shelter_count"] / total * 100).round(1)
+        kpi_df["Тип"] = pd.Categorical(kpi_df["Тип"], categories=order, ordered=True)
+        return kpi_df.sort_values("Тип")
+
     for idx, (heading, col, dist_key, kyiv_key) in enumerate(configs):
         if idx:
             st.divider()
 
         st.subheader(heading)
         kyiv_df = agg[kyiv_key].rename(columns={col: "Тип"})
-        kpi_cols = st.columns(min(4, len(kyiv_df)))
-        for metric_col, (_, row) in zip(kpi_cols, kyiv_df.head(4).iterrows()):
+        kpi_df = aggregate_kpi_row(heading, kyiv_df)
+        kpi_cols = st.columns(len(kpi_df))
+        for metric_col, (_, row) in zip(kpi_cols, kpi_df.iterrows()):
             with metric_col:
                 st.metric(row["Тип"], f"{row['percent']:.1f}%")
                 st.caption(f"{int(row['shelter_count']):,} укриттів")
