@@ -375,7 +375,7 @@ if section == "Місткість":
     fig_choro.update_layout(
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
         height=560,
-        coloraxis_colorbar=dict(title="К-сть людей\n на місце", thickness=12),
+        coloraxis_colorbar=dict(title="К-сть людей на місце", thickness=12),
     )
     st.plotly_chart(fig_choro, use_container_width=True)
 
@@ -390,7 +390,7 @@ if section == "Місткість":
         color_continuous_scale="Blues_r",
         text="area_per_person",
         category_orders={"district": district_order},
-        # labels={"area_per_person": "М² на людину", "district": "Район"},
+        labels={"area_per_person": "М² на людину", "district": "Район"},
         height=420,
     )
     fig_bar.update_traces(texttemplate="%{text:.2f} м²", textposition="outside")
@@ -460,6 +460,7 @@ elif section == "Типи укриттів":
             x="percent",
             y="district",
             color="Тип",
+            color_continuous_scale="Bluered",
             orientation="h",
             barmode="stack",
             labels={"percent": "%", "district": ""},
