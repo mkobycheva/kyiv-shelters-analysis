@@ -262,20 +262,19 @@ section = st.sidebar.radio(
 # ══════════════════════════════════════════════════════════════════════════════
 if section == "Місткість":
 
-    # padding back for content sections
-    st.markdown("""
-    <style>
-    [data-testid="stAppViewContainer"] > .main > .block-container {
-        padding-left: 3rem !important;
-        padding-right: 3rem !important;
-        padding-bottom: 3rem !important;
-        max-width: 100% !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    # # padding back for content sections
+    # st.markdown("""
+    # <style>
+    # [data-testid="stAppViewContainer"] > .main > .block-container {
+    #     padding-left: 3rem !important;
+    #     padding-right: 3rem !important;
+    #     padding-bottom: 3rem !important;
+    #     max-width: 100% !important;
+    # }
+    # </style>
+    # """, unsafe_allow_html=True)
 
     st.title("Чи вміщається Київ в укриття?")
-    st.caption("Аналіз стану і доступності захисних споруд за даними з відкритих джерел")
 
     kyiv = agg["kyiv_cap"].iloc[0]
     c1, c2, c3, c4, c5 = st.columns(5)
@@ -302,7 +301,7 @@ if section == "Місткість":
     cap = cap.merge(kinds_wide, on="district", how="left")
     cap = cap.merge(mgn_tooltip, on="district", how="left")
 
-    map_col, bar_col = st.columns([3, 1])
+    map_col, bar_col = st.columns([2, 1])
 
     with map_col:
         fig_choro = px.choropleth_mapbox(
@@ -343,7 +342,7 @@ if section == "Місткість":
         fig_choro.update_layout(
             margin={"r": 0, "t": 0, "l": 0, "b": 0},
             height=500,
-            coloraxis_colorbar=dict(title="Людей<br>на місце", thickness=12),
+            coloraxis_colorbar=dict(title="К-сть людей на місце", thickness=12),
         )
         st.plotly_chart(fig_choro, use_container_width=True)
 
@@ -357,14 +356,14 @@ if section == "Місткість":
             color="area_per_person",
             color_continuous_scale="RdYlGn",
             text="area_per_person",
-            labels={"area_per_person": "м² на людину", "district": ""},
+            labels={"area_per_person": "М² на людину", "district": "Район"},
             height=500,
         )
         fig_bar.update_traces(texttemplate="%{text:.2f} м²", textposition="outside")
         fig_bar.update_layout(
             coloraxis_showscale=False,
             margin=dict(l=0, r=80, t=30, b=0),
-            title=dict(text="м² укриття на людину", font=dict(size=14)),
+            title=dict(text="М² укриття на людину:", font=dict(size=14)),
             yaxis=dict(tickfont=dict(size=12)),
         )
         st.plotly_chart(fig_bar, use_container_width=True)
@@ -385,10 +384,10 @@ elif section == "Типи укриттів":
 
     for tab, (col, dist_key, kyiv_key) in zip(tabs, configs):
         with tab:
-            col1, col2 = st.columns([2, 1])
+            col1, col2 = st.columns([1, 1])
 
             with col1:
-                st.markdown("##### По районах")
+                st.markdown("#### По районах")
                 dist_df = agg[dist_key].rename(columns={col: "Тип"})
                 fig_bar = px.bar(
                     dist_df,
@@ -408,7 +407,7 @@ elif section == "Типи укриттів":
                 st.plotly_chart(fig_bar, use_container_width=True)
 
             with col2:
-                st.markdown("##### По Києву загалом")
+                st.markdown("#### По Києву загалом")
                 kyiv_df = agg[kyiv_key].rename(columns={col: "Тип"})
                 fig_donut = px.pie(
                     kyiv_df,
