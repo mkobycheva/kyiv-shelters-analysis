@@ -105,6 +105,23 @@ def load_data():
     df['lon'] = pd.to_numeric(df['lon'], errors='coerce')
     df['accessible_mgn'] = df['accessible_mgn'].fillna(False).astype(bool)
 
+    functional_purpose_groups = {
+        "Заклади культури": "Громадські, культурні та медичні заклади",
+        "Основні та допоміжні (підсобні) приміщення закладів охорони здоров'я": "Громадські, культурні та медичні заклади",
+        "Спортивні приміщення (тири, зали для проведення спортивних занять)": "Громадські, культурні та медичні заклади",
+        "Виставкові зали": "Громадські, культурні та медичні заклади",
+        "Приміщення для торгівлі і громадського харчування (магазини, зали їдалень, буфети, кафе тощо)": "Комерційні та побутові приміщення",
+        "Приміщення для побутового обслуговування населення (ательє, пункти прокату, приймальні пункти тощо)": "Комерційні та побутові приміщення",
+        "Гардеробні та інші побутові приміщення": "Комерційні та побутові приміщення",
+        "Адміністративні та офісні приміщення": "Адміністративні та виробничо-складські приміщення",
+        "Складські приміщення": "Адміністративні та виробничо-складські приміщення",
+        "Виробничі приміщення": "Адміністративні та виробничо-складські приміщення",
+        "Приміщення для розміщення аварійних (ремонтних) та чергових служб": "Адміністративні та виробничо-складські приміщення",
+    }
+    df["functional_purpose_group"] = (
+        df["functional_purpose"].map(functional_purpose_groups).fillna(df["functional_purpose"])
+    )
+
     def clean_utility_status(text):
         if pd.isna(text) or text is None:
             return "Невідомо"
@@ -194,8 +211,8 @@ def build_aggregates(df):
     kyiv_shelter_kinds      = kyiv_pct("shelter_kind")
     district_location_types = dist_pct("location_type")
     kyiv_location_types     = kyiv_pct("location_type")
-    district_functional     = dist_pct("functional_purpose")
-    kyiv_functional         = kyiv_pct("functional_purpose")
+    district_functional     = dist_pct("functional_purpose_group")
+    kyiv_functional         = kyiv_pct("functional_purpose_group")
 
     def make_report(clean_col, good_label, bad_label):
         counts = pd.crosstab(df["district"], df[clean_col])
@@ -385,7 +402,7 @@ elif section == "Типи укриттів":
     configs = [
         ("Вид споруди", "shelter_kind", "district_shelter_kinds", "kyiv_shelter_kinds"),
         ("Тип локації", "location_type", "district_location_types", "kyiv_location_types"),
-        ("Призначення", "functional_purpose", "district_functional", "kyiv_functional"),
+        ("Призначення", "functional_purpose_group", "district_functional", "kyiv_functional"),
     ]
 
     for idx, (heading, col, dist_key, kyiv_key) in enumerate(configs):
