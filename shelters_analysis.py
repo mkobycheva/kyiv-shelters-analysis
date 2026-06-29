@@ -460,7 +460,7 @@ elif section == "Типи укриттів":
             x="percent",
             y="district",
             color="Тип",
-            color_continuous_scale="Bluered",
+            color_discrete_sequence="Prism",
             orientation="h",
             barmode="stack",
             labels={"percent": "%", "district": ""},
