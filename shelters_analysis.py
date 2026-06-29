@@ -301,72 +301,70 @@ if section == "Місткість":
     cap = cap.merge(kinds_wide, on="district", how="left")
     cap = cap.merge(mgn_tooltip, on="district", how="left")
 
-    map_col, bar_col = st.columns([2, 1])
+    fig_choro = px.choropleth_mapbox(
+        cap,
+        geojson=geojson,
+        locations="district",
+        featureidkey="properties.district",
+        color="population_by_capacity",
+        color_continuous_scale="Oranges",
+        mapbox_style="carto-positron",
+        zoom=9,
+        center={"lat": 50.45, "lon": 30.52},
+        opacity=0.65,
+        hover_name="district",
+        hover_data={
+            "population_by_capacity": ":.1f",
+            "shelter_count": True,
+            "Доступно для МГН (%)": ":.1f",
+            "district": False,
+        },
+        labels={
+            "population_by_capacity": "Людей на місце",
+            "shelter_count": "Укриттів",
+        },
+    )
 
-    with map_col:
-        fig_choro = px.choropleth_mapbox(
-            cap,
-            geojson=geojson,
-            locations="district",
-            featureidkey="properties.district",
-            color="population_by_capacity",
-            color_continuous_scale="RdYlGn_r",
-            mapbox_style="carto-positron",
-            zoom=9,
-            center={"lat": 50.45, "lon": 30.52},
-            opacity=0.65,
-            hover_name="district",
-            hover_data={
-                "population_by_capacity": ":.1f",
-                "shelter_count": True,
-                "Доступно для МГН (%)": ":.1f",
-                "district": False,
-            },
-            labels={
-                "population_by_capacity": "Людей на місце",
-                "shelter_count": "Укриттів",
-            },
-        )
+    df_pts = df.dropna(subset=["lat", "lon"])
+    fig_choro.add_trace(go.Scattermapbox(
+        lat=df_pts["lat"],
+        lon=df_pts["lon"],
+        mode="markers",
+        marker=dict(size=2, color="#1a1a2e", opacity=0.4),
+        hoverinfo="skip",
+        showlegend=False,
+        name="",
+    ))
 
-        df_pts = df.dropna(subset=["lat", "lon"])
-        fig_choro.add_trace(go.Scattermapbox(
-            lat=df_pts["lat"],
-            lon=df_pts["lon"],
-            mode="markers",
-            marker=dict(size=2, color="#1a1a2e", opacity=0.4),
-            hoverinfo="skip",
-            showlegend=False,
-            name="",
-        ))
+    fig_choro.update_layout(
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        height=560,
+        coloraxis_colorbar=dict(title="К-сть людей на місце", thickness=12),
+    )
+    st.plotly_chart(fig_choro, use_container_width=True)
 
-        fig_choro.update_layout(
-            margin={"r": 0, "t": 0, "l": 0, "b": 0},
-            height=500,
-            coloraxis_colorbar=dict(title="К-сть людей на місце", thickness=12),
-        )
-        st.plotly_chart(fig_choro, use_container_width=True)
-
-    with bar_col:
-        bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person")
-        fig_bar = px.bar(
-            bar_df,
-            x="area_per_person",
-            y="district",
-            orientation="h",
-            color="area_per_person",
-            color_continuous_scale="RdYlGn",
-            text="area_per_person",
-            labels={"area_per_person": "М² на людину", "district": "Район"},
-            height=500,
-        )
-        fig_bar.update_traces(texttemplate="%{text:.2f} м²", textposition="outside")
-        fig_bar.update_layout(
-            coloraxis_showscale=False,
-            margin=dict(l=0, r=80, t=30, b=0),
-            title=dict(text="М² укриття на людину:", font=dict(size=14)),
-            yaxis=dict(tickfont=dict(size=12)),
-        )
-        st.plotly_chart(fig_bar, use_container_width=True)
+    bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person", ascending=True)
+    district_order = bar_df["district"].tolist()
+    fig_bar = px.bar(
+        bar_df,
+        x="area_per_person",
+        y="district",
+        orientation="h",
+        color="area_per_person",
+        color_continuous_scale="Reds",
+        text="area_per_person",
+        category_orders={"district": district_order},
+        labels={"area_per_person": "М² на людину", "district": "Район"},
+        height=420,
+    )
+    fig_bar.update_traces(texttemplate="%{text:.2f} м²", textposition="outside")
+    fig_bar.update_layout(
+        coloraxis_showscale=False,
+        margin=dict(l=0, r=80, t=30, b=0),
+        title=dict(text="М² укриття на людину:", font=dict(size=14)),
+        yaxis=dict(tickfont=dict(size=12), autorange="reversed"),
+    )
+    st.plotly_chart(fig_bar, use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 2. ТИПИ УКРИТТІВ
@@ -374,54 +372,41 @@ if section == "Місткість":
 elif section == "Типи укриттів":
     st.title("Типи укриттів")
 
-    tabs = st.tabs(["Вид споруди", "Тип локації", "Призначення"])
-
     configs = [
-        ("shelter_kind",       "district_shelter_kinds",  "kyiv_shelter_kinds"),
-        ("location_type",      "district_location_types", "kyiv_location_types"),
-        ("functional_purpose", "district_functional",     "kyiv_functional"),
+        ("Вид споруди", "shelter_kind", "district_shelter_kinds", "kyiv_shelter_kinds"),
+        ("Тип локації", "location_type", "district_location_types", "kyiv_location_types"),
+        ("Призначення", "functional_purpose", "district_functional", "kyiv_functional"),
     ]
 
-    for tab, (col, dist_key, kyiv_key) in zip(tabs, configs):
-        with tab:
-            col1, col2 = st.columns([1, 1])
+    for idx, (heading, col, dist_key, kyiv_key) in enumerate(configs):
+        if idx:
+            st.divider()
 
-            with col1:
-                st.markdown("#### По районах")
-                dist_df = agg[dist_key].rename(columns={col: "Тип"})
-                fig_bar = px.bar(
-                    dist_df,
-                    x="percent",
-                    y="district",
-                    color="Тип",
-                    orientation="h",
-                    barmode="stack",
-                    labels={"percent": "%", "district": ""},
-                    height=400,
-                )
-                fig_bar.update_layout(
-                    legend=dict(orientation="h", y=-0.25),
-                    margin=dict(l=0, r=0, t=10, b=0),
-                    yaxis=dict(categoryorder="total ascending"),
-                )
-                st.plotly_chart(fig_bar, use_container_width=True)
+        st.subheader(heading)
+        kyiv_df = agg[kyiv_key].rename(columns={col: "Тип"})
+        kpi_cols = st.columns(min(4, len(kyiv_df)))
+        for metric_col, (_, row) in zip(kpi_cols, kyiv_df.head(4).iterrows()):
+            with metric_col:
+                st.metric(row["Тип"], f"{row['percent']:.1f}%")
+                st.caption(f"{int(row['shelter_count']):,} укриттів")
 
-            with col2:
-                st.markdown("#### По Києву загалом")
-                kyiv_df = agg[kyiv_key].rename(columns={col: "Тип"})
-                fig_donut = px.pie(
-                    kyiv_df,
-                    names="Тип",
-                    values="shelter_count",
-                    hole=0.5,
-                    height=400,
-                )
-                fig_donut.update_traces(textposition="inside", textinfo="percent+label")
-                fig_donut.update_layout(
-                    showlegend=False,
-                    margin=dict(l=0, r=0, t=10, b=0),
-                )
-                st.plotly_chart(fig_donut, use_container_width=True)
+        dist_df = agg[dist_key].rename(columns={col: "Тип"})
+        fig_bar = px.bar(
+            dist_df,
+            x="percent",
+            y="district",
+            color="Тип",
+            orientation="h",
+            barmode="stack",
+            labels={"percent": "%", "district": ""},
+            height=440,
+        )
+        fig_bar.update_layout(
+            legend=dict(orientation="h", y=-0.25),
+            margin=dict(l=0, r=0, t=10, b=70),
+            yaxis=dict(categoryorder="total ascending"),
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 3. СТАН СИСТЕМ
@@ -431,10 +416,10 @@ elif section == "Стан систем":
 
     status = agg["df_total_status"]
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Водопостачання", f"{status['Водопостачання']}%")
-    c2.metric("Опалення",       f"{status['Опалення']}%")
-    c3.metric("Електропостачання", f"{status['Електропостачання']}%")
-    c4.metric("Інтернет",       f"{status['Інтернет']}%")
+    c1.metric("Опалення", f"{status['Опалення']}%")
+    c2.metric("Електропостачання", f"{status['Електропостачання']}%")
+    c3.metric("Інтернет", f"{status['Інтернет']}%")
+    c4.metric("Водопостачання", f"{status['Водопостачання']}%")
     st.caption("% укриттів з наявною/справною системою по Києву")
 
     st.divider()
@@ -447,13 +432,13 @@ elif section == "Стан систем":
     comm_col = "Є інтернет (Wi-Fi/Дротовий) (%)" if "Є інтернет (Wi-Fi/Дротовий) (%)" in agg["comm_report"].columns else "Є інтернет (%)"
     comm = agg["comm_report"][["Район міста", comm_col]].rename(columns={comm_col: "Інтернет"})
 
-    heatmap_df = water.merge(heating, on="Район міста").merge(power, on="Район міста").merge(comm, on="Район міста")
-    heatmap_df["avg"] = heatmap_df[["Вода", "Опалення", "Електро", "Інтернет"]].mean(axis=1)
-    heatmap_df = heatmap_df.sort_values("avg", ascending=True).drop(columns="avg")
+    heatmap_df = heating.merge(power, on="Район міста").merge(comm, on="Район міста").merge(water, on="Район міста")
+    heatmap_df = heatmap_df.sort_values("Опалення", ascending=True)
 
-    z = heatmap_df[["Вода", "Опалення", "Електро", "Інтернет"]].values
+    system_order = ["Опалення", "Електро", "Інтернет", "Вода"]
+    z = heatmap_df[system_order].values
     y = heatmap_df["Район міста"].tolist()
-    x = ["Вода", "Опалення", "Електро", "Інтернет"]
+    x = system_order
 
     fig_heat = go.Figure(go.Heatmap(
         z=z, x=x, y=y,
