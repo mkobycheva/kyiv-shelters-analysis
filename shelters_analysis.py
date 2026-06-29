@@ -340,8 +340,8 @@ if section == "Місткість":
         color="population_by_capacity",
         color_continuous_scale="OrRd",
         mapbox_style="carto-positron",
-        zoom=9,
-        center={"lat": 50.45, "lon": 30.52},
+        zoom=9.2,
+        center={"lat": 50.43, "lon": 30.52},
         opacity=0.5,
         hover_name="district",
         hover_data={
