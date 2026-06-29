@@ -366,7 +366,7 @@ if section == "Місткість":
         lat=df_pts["lat"],
         lon=df_pts["lon"],
         mode="markers",
-        marker=dict(size=4, color="#1a1a2e", opacity=0.4),
+        marker=dict(size=3, color="#1a1a2e", opacity=0.3),
         hoverinfo="skip",
         showlegend=False,
         name="",
@@ -375,7 +375,7 @@ if section == "Місткість":
     fig_choro.update_layout(
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
         height=560,
-        coloraxis_colorbar=dict(title="К-сть людей на місце", thickness=12),
+        coloraxis_colorbar=dict(title="К-сть людей\n на місце", thickness=12),
     )
     st.plotly_chart(fig_choro, use_container_width=True)
 
