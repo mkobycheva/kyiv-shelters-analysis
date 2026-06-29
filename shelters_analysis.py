@@ -342,7 +342,7 @@ if section == "Місткість":
         mapbox_style="carto-positron",
         zoom=9.3,
         center={"lat": 50.40, "lon": 30.52},
-        opacity=0.5,
+        opacity=0.65,
         hover_name="district",
         hover_data={
             "population_by_capacity": ":.1f",
@@ -351,8 +351,8 @@ if section == "Місткість":
             "district": False,
         },
         labels={
-            "population_by_capacity": "Людей на місце",
-            "shelter_count": "Укриттів",
+            "population_by_capacity": "Людей на місце ",
+            "shelter_count": "Укриттів ",
         },
     )
 
