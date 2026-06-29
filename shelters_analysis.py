@@ -345,9 +345,9 @@ if section == "Місткість":
         opacity=0.65,
         hover_name="district",
         hover_data={
-            "population_by_capacity": ":.1f",
+            "population_by_capacity": " :.1f",
             "shelter_count": True,
-            "Доступно для МГН (%)": ":.1f",
+            "Доступно для МГН (%)": " :.1f",
             "district": False,
         },
         labels={
