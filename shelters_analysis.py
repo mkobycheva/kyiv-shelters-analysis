@@ -408,12 +408,6 @@ if section == "Місткість":
 elif section == "Типи укриттів":
     st.title("Типи укриттів")
 
-    configs = [
-        ("Вид споруди", "shelter_kind", "district_shelter_kinds", "kyiv_shelter_kinds"),
-        ("Тип локації", "location_type", "district_location_types", "kyiv_location_types"),
-        ("Призначення", "functional_purpose_group", "district_functional", "kyiv_functional"),
-    ]
-
     def aggregate_kpi_row(heading, kyiv_df):
         if heading == "Вид споруди":
             order = ["Найпростіше укриття", "Сховище", "Інше"]
@@ -441,12 +435,7 @@ elif section == "Типи укриттів":
         kpi_df["Тип"] = pd.Categorical(kpi_df["Тип"], categories=order, ordered=True)
         return kpi_df.sort_values("Тип")
 
-    for idx, (heading, col, dist_key, kyiv_key) in enumerate(configs):
-        if idx:
-            st.divider()
-
-        st.subheader(heading)
-        kyiv_df = agg[kyiv_key].rename(columns={col: "Тип"})
+    def render_kpi_row(heading, kyiv_df):
         kpi_df = aggregate_kpi_row(heading, kyiv_df)
         kpi_cols = st.columns(len(kpi_df))
         for metric_col, (_, row) in zip(kpi_cols, kpi_df.iterrows()):
@@ -454,24 +443,76 @@ elif section == "Типи укриттів":
                 st.metric(row["Тип"], f"{row['percent']:.1f}%")
                 st.caption(f"{int(row['shelter_count']):,} укриттів")
 
-        dist_df = agg[dist_key].rename(columns={col: "Тип"})
-        fig_bar = px.bar(
-            dist_df,
-            x="percent",
-            y="district",
-            color="Тип",
-            color_discrete_sequence=px.colors.qualitative.Safe,
-            orientation="h",
-            barmode="stack",
-            labels={"percent": "%", "district": ""},
-            height=440,
-        )
-        fig_bar.update_layout(
-            legend=dict(orientation="h", y=-0.25),
-            margin=dict(l=0, r=0, t=10, b=70),
-            yaxis=dict(categoryorder="total ascending"),
-        )
-        st.plotly_chart(fig_bar, use_container_width=True)
+    st.subheader("Вид споруди")
+    shelter_kind_kyiv = agg["kyiv_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
+    render_kpi_row("Вид споруди", shelter_kind_kyiv)
+
+    shelter_kind_dist = agg["district_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
+    fig_shelter_kind = px.bar(
+        shelter_kind_dist,
+        x="percent",
+        y="district",
+        color="Тип",
+        color_discrete_sequence=px.colors.qualitative.Safe,
+        orientation="h",
+        barmode="stack",
+        labels={"percent": "%", "district": ""},
+        height=440,
+    )
+    fig_shelter_kind.update_layout(
+        legend=dict(orientation="h", y=-0.25),
+        margin=dict(l=0, r=0, t=10, b=70),
+        yaxis=dict(categoryorder="total ascending"),
+    )
+    st.plotly_chart(fig_shelter_kind, use_container_width=True)
+
+    st.divider()
+    st.subheader("Тип локації")
+    location_type_kyiv = agg["kyiv_location_types"].rename(columns={"location_type": "Тип"})
+    render_kpi_row("Тип локації", location_type_kyiv)
+
+    location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
+    fig_location_type = px.bar(
+        location_type_dist,
+        x="percent",
+        y="district",
+        color="Тип",
+        color_discrete_sequence=px.colors.qualitative.Safe,
+        orientation="h",
+        barmode="stack",
+        labels={"percent": "%", "district": ""},
+        height=440,
+    )
+    fig_location_type.update_layout(
+        legend=dict(orientation="h", y=-0.25),
+        margin=dict(l=0, r=0, t=10, b=70),
+        yaxis=dict(categoryorder="total ascending"),
+    )
+    st.plotly_chart(fig_location_type, use_container_width=True)
+
+    st.divider()
+    st.subheader("Призначення")
+    functional_kyiv = agg["kyiv_functional"].rename(columns={"functional_purpose_group": "Тип"})
+    render_kpi_row("Призначення", functional_kyiv)
+
+    functional_dist = agg["district_functional"].rename(columns={"functional_purpose_group": "Тип"})
+    fig_functional = px.bar(
+        functional_dist,
+        x="percent",
+        y="district",
+        color="Тип",
+        color_discrete_sequence=px.colors.qualitative.Safe,
+        orientation="h",
+        barmode="stack",
+        labels={"percent": "%", "district": ""},
+        height=440,
+    )
+    fig_functional.update_layout(
+        legend=dict(orientation="h", y=-0.25),
+        margin=dict(l=0, r=0, t=10, b=70),
+        yaxis=dict(categoryorder="total ascending"),
+    )
+    st.plotly_chart(fig_functional, use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 3. СТАН СИСТЕМ
