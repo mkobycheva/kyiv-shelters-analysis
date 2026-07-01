@@ -510,12 +510,29 @@ elif section == "Типи укриттів":
     render_kpi_row("Вид споруди", shelter_kind_kyiv)
 
     shelter_kind_dist = agg["district_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
+
+    categories = [
+        "Сховище",
+        "Споруда подвійного призначення із захисними властивостями сховища",
+        "Споруда подвійного призначення із захисними властивостями протирадіаційного укриття",
+        "Первинне (мобільне) укриття",
+        "Найпростіше укриття"
+    ]
+
+    num_categories = len(categories)
+    colors = px.colors.sample_colorscale(
+        "Reds_r",
+        [i / (num_categories - 1) for i in range(num_categories)]
+    )
+
+    color_map = dict(zip(categories, colors))
+
     fig_shelter_kind = px.bar(
         shelter_kind_dist,
         x="percent",
         y="district",
         color="Тип",
-        color_discrete_sequence=px.colors.qualitative.Safe,
+        color_discrete_map=color_map,
         orientation="h",
         barmode="stack",
         labels={"percent": "%", "district": ""},
