@@ -308,12 +308,17 @@ if section == "Місткість":
     st.title("Чи вміщається Київ в укриття?")
 
     kyiv = agg["kyiv_cap"].iloc[0]
-    c1, c2, c3, c4, c5 = st.columns(5)
+    kyiv_area_per_person = kyiv["total_area"] / kyiv["population"]
+
+    c1, c2, c3 = st.columns(3)
     c1.metric("Кількість укриттів, шт.", f"{int(kyiv['shelter_count']):,}")
     c2.metric("Загальна місткість, осіб", f"{int(kyiv['total_capacity']):,}")
-    c3.metric("Кількість населення, осіб", f"{int(kyiv['population']):,}")
+    c3.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}")
+
+    c4, c5, c6 = st.columns(3)
     c4.metric("Людей на 1 місце", f"{kyiv['population_by_capacity']:.1f}")
-    c5.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}")
+    c5.metric("Кількість населення, осіб", f"{int(kyiv['population']):,}")
+    c6.metric("Площа на 1 людину, м²", f"{kyiv_area_per_person:.2f}")
 
     st.divider()
     st.subheader("Місткість укриттів по районах")
