@@ -431,7 +431,7 @@ if section == "Місткість":
         orientation="h",
         color="area_per_person",
         color_continuous_scale="Oranges_r",
-        range_color=[0, 1],
+        range_color=[0, 2],
         text="area_per_person",
         category_orders={"district": district_order},
         labels={"area_per_person": "М² на людину", "district": "Район"},
