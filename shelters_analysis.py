@@ -520,8 +520,8 @@ elif section == "Типи укриттів":
     ]
 
     num_categories = len(categories)
-    start = 0.9
-    end = 0.5
+    start = 1
+    end = 0.75
     step = (end - start) / (num_categories - 1)
     sample_points = [start + i * step for i in range(num_categories)]
     # Для 5 категорій це дасть точки: [0.2, 0.3625, 0.525, 0.6875, 0.85]
