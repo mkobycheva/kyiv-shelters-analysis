@@ -390,7 +390,7 @@ if section == "Місткість":
             tickfont=dict(size=10)
         )
     )
-    st.plotly_chart(fig_choro, use_container_width=True)
+    st.plotly_chart(fig_choro, width="stretch")
 
     st.html(
         """
@@ -443,7 +443,7 @@ if section == "Місткість":
         margin=dict(l=0, r=80, t=0, b=0),
         yaxis=dict(tickfont=dict(size=12)),
     )
-    st.plotly_chart(fig_bar, use_container_width=True)
+    st.plotly_chart(fig_bar, width="stretch")
 
     st.html(
         """
@@ -509,7 +509,7 @@ elif section == "Типи укриттів":
     shelter_kind_kyiv = agg["kyiv_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
     render_kpi_row("Вид споруди", shelter_kind_kyiv)
 
-    shelter_kind_percent = st.toggle("Показати у %")
+    shelter_kind_percent = st.toggle("Показати у %", key="toggle_shelter_kind_percent")
 
     shelter_kind_dist = agg["district_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
     shelter_kind_dist["values"] = shelter_kind_dist["percent"] if shelter_kind_percent else shelter_kind_dist["shelter_count"]
@@ -562,14 +562,14 @@ elif section == "Типи укриттів":
             categoryarray=shelter_district_order,
         ),
     )
-    st.plotly_chart(fig_shelter_kind, use_container_width=True)
+    st.plotly_chart(fig_shelter_kind, width="stretch")
 
     st.divider()
     st.subheader("Тип локації")
     location_type_kyiv = agg["kyiv_location_types"].rename(columns={"location_type": "Тип"})
     render_kpi_row("Тип локації", location_type_kyiv)
 
-    location_type_percent = st.toggle("Показати у %")
+    location_type_percent = st.toggle("Показати у %", key="toggle_location_type_percent")
 
     location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
     location_type_dist["values"] = location_type_dist["percent"] if location_type_percent else location_type_dist["shelter_count"]
@@ -620,14 +620,14 @@ elif section == "Типи укриттів":
             categoryarray=location_type_order,
         ),
     )
-    st.plotly_chart(fig_location_type, use_container_width=True)
+    st.plotly_chart(fig_location_type, width="stretch")
 
     st.divider()
     st.subheader("Призначення")
     functional_kyiv = agg["kyiv_functional"].rename(columns={"functional_purpose_group": "Тип"})
     render_kpi_row("Призначення", functional_kyiv)
 
-    functional_percent = st.toggle("Показати у %")
+    functional_percent = st.toggle("Показати у %", key="toggle_functional_percent")
 
     functional_dist = agg["district_functional"].rename(columns={"functional_purpose_group": "Тип"})
     functional_dist["values"] = functional_dist["percent"] if functional_percent else functional_dist["shelter_count"]
@@ -647,7 +647,7 @@ elif section == "Типи укриттів":
         margin=dict(l=0, r=0, t=10, b=70),
         yaxis=dict(categoryorder="total ascending"),
     )
-    st.plotly_chart(fig_functional, use_container_width=True)
+    st.plotly_chart(fig_functional, width="stretch")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 3. СТАН СИСТЕМ
@@ -695,7 +695,7 @@ elif section == "Стан систем":
         margin=dict(l=0, r=0, t=10, b=0),
         xaxis=dict(side="top"),
     )
-    st.plotly_chart(fig_heat, use_container_width=True)
+    st.plotly_chart(fig_heat, width="stretch")
 
     st.html(
         """
@@ -746,7 +746,7 @@ elif section == "Доступність і відкритість":
         coloraxis_showscale=False,
         margin=dict(l=0, r=80, t=10, b=0),
     )
-    st.plotly_chart(fig_mgn, use_container_width=True)
+    st.plotly_chart(fig_mgn, width="stretch")
 
     st.divider()
 
@@ -774,7 +774,7 @@ elif section == "Доступність і відкритість":
             legend=dict(orientation="h", y=-0.3, title=""),
             margin=dict(l=0, r=0, t=10, b=60),
         )
-        st.plotly_chart(fig_oa_bar, use_container_width=True)
+        st.plotly_chart(fig_oa_bar, width="stretch")
 
     with oa_col2:
         kyiv_oa = agg["kyiv_open_access"]
@@ -790,4 +790,4 @@ elif section == "Доступність і відкритість":
             legend=dict(orientation="v", y=0.5),
             margin=dict(l=0, r=0, t=10, b=0),
         )
-        st.plotly_chart(fig_donut, use_container_width=True)
+        st.plotly_chart(fig_donut, width="stretch")
