@@ -514,7 +514,7 @@ elif section == "Типи укриттів":
         shelter_kind_dist[shelter_kind_dist["Тип"] == "Сховище"]
         .set_index("district")["percent"]
         .reindex(shelter_kind_dist["district"].unique(), fill_value=0)
-        .sort_values(ascending=True)
+        .sort_values(ascending=False)
         .index
         .tolist()
     )
@@ -571,7 +571,7 @@ elif section == "Типи укриттів":
         location_type_dist[location_type_dist["Тип"] == "Заглиблена"]
         .set_index("district")["percent"]
         .reindex(shelter_kind_dist["district"].unique(), fill_value=0)
-        .sort_values(ascending=True)
+        .sort_values(ascending=False)
         .index
         .tolist()
     )
@@ -583,8 +583,8 @@ elif section == "Типи укриттів":
     ]
 
     num_categories = len(location_type_categories)
-    start = 0.1
-    end = 0.47
+    start = 0.3
+    end = 0.67
     step = (end - start) / (num_categories - 1)
     sample_points = [start + i * step for i in range(num_categories)]
 
