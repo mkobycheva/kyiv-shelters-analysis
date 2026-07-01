@@ -411,7 +411,9 @@ if section == "Місткість":
         """
     )
 
-    #st.info(":red-background[На ~2 900 000 осіб існує ~2 000 000 укриттів. Тож навіть за ідеального сценарію, якщо всі укриття відкриті та доступні, близько 30% населення міста залишаються поза захистом.]", icon="📌")
+    st.divider()
+
+    st.subheader("Площа укриття на людину")
 
     bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person", ascending=True)
     district_order = bar_df["district"].tolist()
@@ -431,7 +433,7 @@ if section == "Місткість":
     fig_bar.update_layout(
         coloraxis_showscale=False,
         margin=dict(l=0, r=80, t=30, b=0),
-        title=dict(text="М² укриття на людину:", font=dict(size=14)),
+        #title=dict(text="М² укриття на людину:", font=dict(size=14)),
         yaxis=dict(tickfont=dict(size=12)),
     )
     st.plotly_chart(fig_bar, use_container_width=True)
