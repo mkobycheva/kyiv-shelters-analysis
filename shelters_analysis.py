@@ -309,11 +309,11 @@ if section == "Місткість":
 
     kyiv = agg["kyiv_cap"].iloc[0]
     c1, c2, c3, c4, c5 = st.columns(5)
-    c1.metric("Кількість укриттів, шт.", f"{int(kyiv['shelter_count']):,}", border=True)
-    c2.metric("Загальна місткість, осіб", f"{int(kyiv['total_capacity']):,}", border=True)
-    c3.metric("Кількість населення, осіб", f"{int(kyiv['population']):,}", border=True)
-    c4.metric("Людей на 1 місце", f"{kyiv['population_by_capacity']:.1f}", border=True)
-    c5.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}", border=True)
+    c1.metric("Кількість укриттів, шт.", f"{int(kyiv['shelter_count']):,}", width="content", border=True)
+    c2.metric("Загальна місткість, осіб", f"{int(kyiv['total_capacity']):,}", width="content", border=True)
+    c3.metric("Кількість населення, осіб", f"{int(kyiv['population']):,}", width="content", border=True)
+    c4.metric("Людей на 1 місце", f"{kyiv['population_by_capacity']:.1f}", width="content", border=True)
+    c5.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}", width="content", border=True)
 
     st.divider()
     st.subheader("Місткість укриттів по районах")
@@ -391,6 +391,8 @@ if section == "Місткість":
         )
     )
     st.plotly_chart(fig_choro, use_container_width=True)
+
+    st.info("На ~2 900 000 осіб існує ~2 000 000 укриттів. Тож навіть за ідеального сценарію, якщо всі укриття відкриті та доступні, близько 30% населення міста залишаються поза захистом.")
 
     bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person", ascending=True)
     district_order = bar_df["district"].tolist()
