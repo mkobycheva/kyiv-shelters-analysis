@@ -534,9 +534,9 @@ elif section == "Типи укриттів":
         x="percent",
         y="district",
         color="Тип",
-        category_orders={
-            "Тип": categories
-        },
+        # category_orders={
+        #     "Тип": categories
+        # },
         color_discrete_map=color_map,
         orientation="h",
         barmode="stack",
