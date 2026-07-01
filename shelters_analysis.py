@@ -551,7 +551,7 @@ elif section == "Типи укриттів":
         color_discrete_map=shelter_kinds_color_map,
         orientation="h",
         barmode="stack",
-        labels={"values": "%" if shelter_kind_percent else "к-сть", "district": ""},
+        labels={"values": "% укриттів" if shelter_kind_percent else "Кількість"},
         height=440,
     )
     fig_shelter_kind.update_layout(
@@ -569,7 +569,10 @@ elif section == "Типи укриттів":
     location_type_kyiv = agg["kyiv_location_types"].rename(columns={"location_type": "Тип"})
     render_kpi_row("Тип локації", location_type_kyiv)
 
+    location_type_percent = st.toggle("Показати у %")
+
     location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
+    location_type_dist["values"] = location_type_dist["percent"] if location_type_percent else location_type_dist["shelter_count"]
     location_type_order = (
         location_type_dist[location_type_dist["Тип"] == "Заглиблена"]
         .set_index("district")["percent"]
@@ -597,7 +600,7 @@ elif section == "Типи укриттів":
 
     fig_location_type = px.bar(
         location_type_dist,
-        x="percent",
+        x="values",
         y="district",
         color="Тип",
         category_orders={
@@ -606,7 +609,7 @@ elif section == "Типи укриттів":
         color_discrete_map=location_type_color_map,
         orientation="h",
         barmode="stack",
-        labels={"percent": "%", "district": ""},
+        labels={"values": "% укриттів" if shelter_kind_percent else "Кількість"},
         height=440,
     )
     fig_location_type.update_layout(
@@ -624,16 +627,19 @@ elif section == "Типи укриттів":
     functional_kyiv = agg["kyiv_functional"].rename(columns={"functional_purpose_group": "Тип"})
     render_kpi_row("Призначення", functional_kyiv)
 
+    functional_percent = st.toggle("Показати у %")
+
     functional_dist = agg["district_functional"].rename(columns={"functional_purpose_group": "Тип"})
+    functional_dist["values"] = functional_dist["percent"] if functional_percent else functional_dist["shelter_count"]
     fig_functional = px.bar(
         functional_dist,
-        x="percent",
+        x="values",
         y="district",
         color="Тип",
         color_discrete_sequence=px.colors.qualitative.G10,
         orientation="h",
         barmode="stack",
-        labels={"percent": "%", "district": ""},
+        labels={"values": "% укриттів" if shelter_kind_percent else "Кількість"},
         height=440,
     )
     fig_functional.update_layout(
