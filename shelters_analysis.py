@@ -561,7 +561,7 @@ elif section == "Типи укриттів":
         category_orders={
             "Тип": shelter_kinds_categories
         },
-        color_discrete_sequence=px.colors.qualitative.Pastel,
+        color_discrete_sequence=["red", "green", "blue", "goldenrod", "magenta"],
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if shelter_kind_percent else "Кількість"},
@@ -569,7 +569,7 @@ elif section == "Типи укриттів":
     )
     fig_shelter_kind.update_layout(
         legend=dict(orientation="h", y=-0.25),
-        margin=dict(l=0, r=0, t=10, b=70)
+        margin=dict(l=0, r=20, t=10, b=70)
     )
 
     fig_shelter_kind.update_xaxes(
