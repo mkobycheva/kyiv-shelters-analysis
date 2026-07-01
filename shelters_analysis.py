@@ -521,7 +521,7 @@ elif section == "Типи укриттів":
 
     num_categories = len(categories)
     colors = px.colors.sample_colorscale(
-        "Reds_r",
+        "Oranges_r",
         [i / (num_categories - 1) for i in range(num_categories)]
     )
 
