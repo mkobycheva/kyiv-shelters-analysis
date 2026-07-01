@@ -381,12 +381,12 @@ if section == "Місткість":
                 font=dict(size=11)
             ),
             thickness=15,
-            len=0.35,
+            len=1,
             x=0.02,
             y=0.05,
-            xanchor="left",
+            xanchor="right",
             yanchor="bottom",
-            bgcolor="rgba(255, 255, 255, 0.75)",
+            bgcolor="rgba(255, 255, 255, 0.5)",
             tickfont=dict(size=10)
         )
     )
