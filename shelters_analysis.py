@@ -510,6 +510,14 @@ elif section == "Типи укриттів":
     render_kpi_row("Вид споруди", shelter_kind_kyiv)
 
     shelter_kind_dist = agg["district_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
+    shelter_district_order = (
+        shelter_kind_dist[shelter_kind_dist["Тип"] == "Сховище"]
+        .set_index("district")["percent"]
+        .reindex(shelter_kind_dist["district"].unique(), fill_value=0)
+        .sort_values(ascending=True)
+        .index
+        .tolist()
+    )
 
     categories = [
         "Сховище",
@@ -521,7 +529,7 @@ elif section == "Типи укриттів":
 
     num_categories = len(categories)
     start = 0.1
-    end = 0.48
+    end = 0.47
     step = (end - start) / (num_categories - 1)
     sample_points = [start + i * step for i in range(num_categories)]
 
@@ -546,7 +554,10 @@ elif section == "Типи укриттів":
     fig_shelter_kind.update_layout(
         legend=dict(orientation="h", y=-0.25),
         margin=dict(l=0, r=0, t=10, b=70),
-        yaxis=dict(categoryorder="total ascending"),
+        yaxis=dict(
+            categoryorder="array",
+            categoryarray=shelter_district_order,
+        ),
     )
     st.plotly_chart(fig_shelter_kind, use_container_width=True)
 
