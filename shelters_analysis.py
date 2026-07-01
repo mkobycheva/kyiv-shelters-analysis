@@ -519,7 +519,7 @@ elif section == "Типи укриттів":
         .tolist()
     )
 
-    categories = [
+    shelter_kinds_categories = [
         "Сховище",
         "Споруда подвійного призначення із захисними властивостями сховища",
         "Споруда подвійного призначення із захисними властивостями протирадіаційного укриття",
@@ -527,15 +527,15 @@ elif section == "Типи укриттів":
         "Найпростіше укриття"
     ]
 
-    num_categories = len(categories)
+    num_categories = len(shelter_kinds_categories)
     start = 0.1
     end = 0.47
     step = (end - start) / (num_categories - 1)
     sample_points = [start + i * step for i in range(num_categories)]
 
-    colors = px.colors.sample_colorscale("Reds_r", sample_points)
+    shelter_kinds_colors = px.colors.sample_colorscale("Reds_r", sample_points)
 
-    color_map = dict(zip(categories, colors))
+    shelter_kinds_color_map = dict(zip(shelter_kinds_categories, shelter_kinds_colors))
 
     fig_shelter_kind = px.bar(
         shelter_kind_dist,
@@ -543,9 +543,9 @@ elif section == "Типи укриттів":
         y="district",
         color="Тип",
         category_orders={
-            "Тип": categories
+            "Тип": shelter_kinds_categories
         },
-        color_discrete_map=color_map,
+        color_discrete_map=shelter_kinds_color_map,
         orientation="h",
         barmode="stack",
         labels={"percent": "%", "district": ""},
@@ -567,12 +567,40 @@ elif section == "Типи укриттів":
     render_kpi_row("Тип локації", location_type_kyiv)
 
     location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
+    location_type_order = (
+        location_type_dist[shelter_kind_dist["Тип"] == "Заглиблена"]
+        .set_index("district")["percent"]
+        .reindex(shelter_kind_dist["district"].unique(), fill_value=0)
+        .sort_values(ascending=True)
+        .index
+        .tolist()
+    )
+
+    location_type_categories = [
+        "Заглиблена",
+        "Надземна",
+        "Напівзаглиблена"
+    ]
+
+    num_categories = len(location_type_categories)
+    start = 0.1
+    end = 0.47
+    step = (end - start) / (num_categories - 1)
+    sample_points = [start + i * step for i in range(num_categories)]
+
+    location_type_colors = px.colors.sample_colorscale("Oranges_r", sample_points)
+
+    location_type_color_map = dict(zip(location_type_categories, location_type_colors))
+
     fig_location_type = px.bar(
         location_type_dist,
         x="percent",
         y="district",
         color="Тип",
-        color_discrete_sequence=px.colors.qualitative.Safe,
+        category_orders={
+            "Тип": location_type_categories
+        },
+        color_discrete_map=location_type_color_map,
         orientation="h",
         barmode="stack",
         labels={"percent": "%", "district": ""},
