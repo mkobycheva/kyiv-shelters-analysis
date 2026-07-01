@@ -341,7 +341,7 @@ if section == "Місткість":
         color_continuous_scale="Reds",
         mapbox_style="carto-positron",
         zoom=9.3,
-        center={"lat": 50.40, "lon": 30.50},
+        center={"lat": 50.40, "lon": 30.55},
         opacity=0.65,
         hover_name="district",
         hover_data={
