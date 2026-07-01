@@ -520,10 +520,14 @@ elif section == "Типи укриттів":
     ]
 
     num_categories = len(categories)
-    colors = px.colors.sample_colorscale(
-        "Oranges_r",
-        [i / (num_categories - 1) for i in range(num_categories)]
-    )
+    start = 0.2
+    end = 0.85
+    step = (end - start) / (num_categories - 1)
+    sample_points = [start + i * step for i in range(num_categories)]
+    # Для 5 категорій це дасть точки: [0.2, 0.3625, 0.525, 0.6875, 0.85]
+
+    # Беремо кольори без екстремальних значень
+    colors = px.colors.sample_colorscale("Reds_r", sample_points)
 
     color_map = dict(zip(categories, colors))
 
