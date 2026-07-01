@@ -561,7 +561,7 @@ elif section == "Типи укриттів":
         category_orders={
             "Тип": shelter_kinds_categories
         },
-        color_discrete_sequence=['#4C78A8', '#54A24B', '#E45756', '#72B7B2', '#F58518'],
+        color_discrete_sequence=['#4C78A8', '#72B7B2', '#E45756', '#54A24B', '#F58518'],
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if shelter_kind_percent else "Кількість"},
@@ -624,7 +624,7 @@ elif section == "Типи укриттів":
         category_orders={
             "Тип": location_type_categories
         },
-        color_discrete_sequence=['#EECA3B', '#B279A2', '#FF9DA6'],
+        color_discrete_sequence=['#B279A2', '#FF9DA6', '#9D755D'],
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if location_type_percent else "Кількість"},
