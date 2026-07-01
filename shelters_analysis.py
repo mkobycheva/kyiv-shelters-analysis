@@ -509,7 +509,10 @@ elif section == "Типи укриттів":
     shelter_kind_kyiv = agg["kyiv_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
     render_kpi_row("Вид споруди", shelter_kind_kyiv)
 
+    shelter_kind_percent = st.toggle("Показати у %")
+
     shelter_kind_dist = agg["district_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
+    shelter_kind_dist["values"] = shelter_kind_dist["percent"] if shelter_kind_percent else shelter_kind_dist["shelter_count"]
     shelter_district_order = (
         shelter_kind_dist[shelter_kind_dist["Тип"] == "Сховище"]
         .set_index("district")["percent"]
@@ -539,7 +542,7 @@ elif section == "Типи укриттів":
 
     fig_shelter_kind = px.bar(
         shelter_kind_dist,
-        x="shelter_count",
+        x="values",
         y="district",
         color="Тип",
         category_orders={
@@ -548,7 +551,7 @@ elif section == "Типи укриттів":
         color_discrete_map=shelter_kinds_color_map,
         orientation="h",
         barmode="stack",
-        labels={"percent": "%", "district": ""},
+        labels={"values": "%" if shelter_kind_percent else "к-сть", "district": ""},
         height=440,
     )
     fig_shelter_kind.update_layout(
@@ -594,7 +597,7 @@ elif section == "Типи укриттів":
 
     fig_location_type = px.bar(
         location_type_dist,
-        x="shelter_count",
+        x="percent",
         y="district",
         color="Тип",
         category_orders={
@@ -624,7 +627,7 @@ elif section == "Типи укриттів":
     functional_dist = agg["district_functional"].rename(columns={"functional_purpose_group": "Тип"})
     fig_functional = px.bar(
         functional_dist,
-        x="shelter_count",
+        x="percent",
         y="district",
         color="Тип",
         color_discrete_sequence=px.colors.qualitative.G10,
