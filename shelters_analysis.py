@@ -375,18 +375,19 @@ if section == "Місткість":
     fig_choro.update_layout(
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
         height=560,
-        coloraxis_colorbar=dict(title="К-сть людей на місце", thickness=12),
+        coloraxis_colorbar=dict(
+            title="Людей на місце",
+            thickness=15,
+            len=0.35,  # Струнка коротка шкала
+            x=0.02,  # Зсув ліворуч (всередину карти)
+            y=0.05,  # Зсув донизу
+            xanchor="left",
+            yanchor="bottom",
+            bgcolor="rgba(255, 255, 255, 0.75)",  # Напівпрозорий фон для читабельності
+            tickfont=dict(size=10),
+            titlefont=dict(size=11))
     )
     st.plotly_chart(fig_choro, use_container_width=True)
-
-    fig_choro.update_layout(
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="right",
-            x=0.99
-        )
-    )
 
     bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person", ascending=True)
     district_order = bar_df["district"].tolist()
