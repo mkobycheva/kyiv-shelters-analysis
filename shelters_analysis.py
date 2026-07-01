@@ -539,7 +539,7 @@ elif section == "Типи укриттів":
 
     fig_shelter_kind = px.bar(
         shelter_kind_dist,
-        x="percent",
+        x="shelter_count",
         y="district",
         color="Тип",
         category_orders={
@@ -594,7 +594,7 @@ elif section == "Типи укриттів":
 
     fig_location_type = px.bar(
         location_type_dist,
-        x="percent",
+        x="shelter_count",
         y="district",
         color="Тип",
         category_orders={
@@ -624,7 +624,7 @@ elif section == "Типи укриттів":
     functional_dist = agg["district_functional"].rename(columns={"functional_purpose_group": "Тип"})
     fig_functional = px.bar(
         functional_dist,
-        x="percent",
+        x="shelter_count",
         y="district",
         color="Тип",
         color_discrete_sequence=px.colors.qualitative.G10,
