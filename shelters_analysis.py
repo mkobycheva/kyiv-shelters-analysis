@@ -665,7 +665,7 @@ elif section == "Типи укриттів":
         color_discrete_sequence=px.colors.qualitative.G10,
         orientation="h",
         barmode="stack",
-        labels={"values": "% укриттів" if shelter_kind_percent else "Кількість"},
+        labels={"values": "% укриттів" if functional_percent else "Кількість"},
         height=440,
     )
     fig_functional.update_layout(
