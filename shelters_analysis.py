@@ -515,7 +515,7 @@ elif section == "Типи укриттів":
     shelter_kind_dist["values"] = shelter_kind_dist["percent"] if shelter_kind_percent else shelter_kind_dist["shelter_count"]
 
     shelter_district_series = (
-        shelter_kind_dist[shelter_kind_dist["Тип"] == "Заглиблена"]
+        shelter_kind_dist[shelter_kind_dist["Тип"] == "Сховище"]
         .set_index("district")["percent"]
         .sort_values(ascending=True)
     )
