@@ -513,14 +513,20 @@ elif section == "Типи укриттів":
 
     shelter_kind_dist = agg["district_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
     shelter_kind_dist["values"] = shelter_kind_dist["percent"] if shelter_kind_percent else shelter_kind_dist["shelter_count"]
-    shelter_district_order = (
-        shelter_kind_dist[shelter_kind_dist["Тип"] == "Сховище"]
+
+    shelter_district_series = (
+        shelter_kind_dist[shelter_kind_dist["Тип"] == "Заглиблена"]
         .set_index("district")["percent"]
-        .reindex(shelter_kind_dist["district"].unique(), fill_value=0)
-        .sort_values(ascending=False)
-        .index
-        .tolist()
+        .sort_values(ascending=True)
     )
+
+    shelter_kind_dist["district"] = pd.Categorical(
+        shelter_kind_dist["district"],
+        categories=shelter_district_series.index,
+        ordered=True
+    )
+
+    shelter_kind_dist = shelter_kind_dist.sort_values("district")
 
     shelter_kinds_categories = [
         "Сховище",
@@ -537,7 +543,6 @@ elif section == "Типи укриттів":
     sample_points = [start + i * step for i in range(num_categories)]
 
     shelter_kinds_colors = px.colors.sample_colorscale("Reds_r", sample_points)
-
     shelter_kinds_color_map = dict(zip(shelter_kinds_categories, shelter_kinds_colors))
 
     fig_shelter_kind = px.bar(
@@ -556,11 +561,7 @@ elif section == "Типи укриттів":
     )
     fig_shelter_kind.update_layout(
         legend=dict(orientation="h", y=-0.25),
-        margin=dict(l=0, r=0, t=10, b=70),
-        yaxis=dict(
-            categoryorder="array",
-            categoryarray=shelter_district_order,
-        ),
+        margin=dict(l=0, r=0, t=10, b=70)
     )
     st.plotly_chart(fig_shelter_kind, width="stretch")
 
@@ -573,14 +574,19 @@ elif section == "Типи укриттів":
 
     location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
     location_type_dist["values"] = location_type_dist["percent"] if location_type_percent else location_type_dist["shelter_count"]
-    location_type_order = (
+    location_sorting_series = (
         location_type_dist[location_type_dist["Тип"] == "Заглиблена"]
         .set_index("district")["percent"]
-        .reindex(shelter_kind_dist["district"].unique(), fill_value=0)
-        .sort_values(ascending=False)
-        .index
-        .tolist()
+        .sort_values(ascending=True)
     )
+
+    location_type_dist["district"] = pd.Categorical(
+        location_type_dist["district"],
+        categories=location_sorting_series.index,
+        ordered=True
+    )
+
+    location_type_dist = location_type_dist.sort_values("district")
 
     location_type_categories = [
         "Заглиблена",
@@ -595,7 +601,6 @@ elif section == "Типи укриттів":
     sample_points = [start + i * step for i in range(num_categories)]
 
     location_type_colors = px.colors.sample_colorscale("Oranges_r", sample_points)
-
     location_type_color_map = dict(zip(location_type_categories, location_type_colors))
 
     fig_location_type = px.bar(
@@ -609,16 +614,12 @@ elif section == "Типи укриттів":
         color_discrete_map=location_type_color_map,
         orientation="h",
         barmode="stack",
-        labels={"values": "% укриттів" if shelter_kind_percent else "Кількість"},
+        labels={"values": "% укриттів" if location_type_percent else "Кількість"},
         height=440,
     )
     fig_location_type.update_layout(
         legend=dict(orientation="h", y=-0.25),
-        margin=dict(l=0, r=0, t=10, b=70),
-        yaxis = dict(
-            categoryorder="array",
-            categoryarray=location_type_order,
-        ),
+        margin=dict(l=0, r=0, t=10, b=70)
     )
     st.plotly_chart(fig_location_type, width="stretch")
 
@@ -631,6 +632,23 @@ elif section == "Типи укриттів":
 
     functional_dist = agg["district_functional"].rename(columns={"functional_purpose_group": "Тип"})
     functional_dist["values"] = functional_dist["percent"] if functional_percent else functional_dist["shelter_count"]
+
+    functional_sorting_series = (
+        functional_dist[functional_dist["Тип"] == "Підвали та техприміщення"]
+        .set_index("district")["percent"]
+        .sort_values(ascending=True)
+    )
+
+    # 2. Перетворюємо "district" на категоріальний тип Pandas із чітким порядком
+    functional_dist["district"] = pd.Categorical(
+        functional_dist["district"],
+        categories=functional_sorting_series.index,
+        ordered=True
+    )
+
+    # 3. Сортуємо сам датафрейм
+    functional_dist = functional_dist.sort_values("district")
+
     fig_functional = px.bar(
         functional_dist,
         x="values",
@@ -644,8 +662,7 @@ elif section == "Типи укриттів":
     )
     fig_functional.update_layout(
         legend=dict(orientation="h", y=-0.25),
-        margin=dict(l=0, r=0, t=10, b=70),
-        yaxis=dict(categoryorder="total ascending"),
+        margin=dict(l=0, r=0, t=10, b=70)
     )
     st.plotly_chart(fig_functional, width="stretch")
 
