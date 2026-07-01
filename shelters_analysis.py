@@ -382,7 +382,7 @@ if section == "Місткість":
             ),
             thickness=15,
             len=1,
-            x=-0.02,
+            x=0.98,
             y=0,
             xanchor="right",
             yanchor="bottom",
