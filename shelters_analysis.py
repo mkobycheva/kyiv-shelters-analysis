@@ -309,11 +309,11 @@ if section == "Місткість":
 
     kyiv = agg["kyiv_cap"].iloc[0]
     c1, c2, c3, c4, c5 = st.columns(5)
-    c1.metric("Кількість укриттів, шт.", f"{int(kyiv['shelter_count']):,}")
-    c2.metric("Загальна місткість, осіб", f"{int(kyiv['total_capacity']):,}")
-    c3.metric("Кількість населення, осіб", f"{int(kyiv['population']):,}")
-    c4.metric("Людей на 1 місце", f"{kyiv['population_by_capacity']:.1f}")
-    c5.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}")
+    c1.metric("Кількість укриттів, шт.", f"{int(kyiv['shelter_count']):,}", border=True)
+    c2.metric("Загальна місткість, осіб", f"{int(kyiv['total_capacity']):,}", border=True)
+    c3.metric("Кількість населення, осіб", f"{int(kyiv['population']):,}", border=True)
+    c4.metric("Людей на 1 місце", f"{kyiv['population_by_capacity']:.1f}", border=True)
+    c5.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}", border=True)
 
     st.divider()
     st.subheader("Місткість укриттів по районах")
@@ -338,7 +338,7 @@ if section == "Місткість":
         locations="district",
         featureidkey="properties.district",
         color="population_by_capacity",
-        color_continuous_scale="Burg",
+        color_continuous_scale="Reds",
         mapbox_style="carto-positron",
         zoom=9.3,
         center={"lat": 50.40, "lon": 30.52},
@@ -379,6 +379,15 @@ if section == "Місткість":
     )
     st.plotly_chart(fig_choro, use_container_width=True)
 
+    fig_choro.update_layout(
+        legend=dict(
+            yanchor="top",
+            y=0.99,
+            xanchor="right",
+            x=0.99
+        )
+    )
+
     bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person", ascending=True)
     district_order = bar_df["district"].tolist()
     fig_bar = px.bar(
@@ -387,7 +396,7 @@ if section == "Місткість":
         y="district",
         orientation="h",
         color="area_per_person",
-        color_continuous_scale="Blues_r",
+        color_continuous_scale="Oranges_r",
         text="area_per_person",
         category_orders={"district": district_order},
         labels={"area_per_person": "М² на людину", "district": "Район"},
