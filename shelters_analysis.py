@@ -376,16 +376,19 @@ if section == "Місткість":
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
         height=560,
         coloraxis_colorbar=dict(
-            title="Людей на місце",
+            title=dict(
+                text="Людей на місце",
+                font=dict(size=11)
+            ),
             thickness=15,
-            len=0.35,  # Струнка коротка шкала
-            x=0.02,  # Зсув ліворуч (всередину карти)
-            y=0.05,  # Зсув донизу
+            len=0.35,
+            x=0.02,
+            y=0.05,
             xanchor="left",
             yanchor="bottom",
-            bgcolor="rgba(255, 255, 255, 0.75)",  # Напівпрозорий фон для читабельності
-            tickfont=dict(size=10),
-            titlefont=dict(size=11))
+            bgcolor="rgba(255, 255, 255, 0.75)",
+            tickfont=dict(size=10)
+        )
     )
     st.plotly_chart(fig_choro, use_container_width=True)
 
