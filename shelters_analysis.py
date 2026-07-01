@@ -392,7 +392,26 @@ if section == "Місткість":
     )
     st.plotly_chart(fig_choro, use_container_width=True)
 
-    st.info(":red-background[На ~2 900 000 осіб існує ~2 000 000 укриттів. Тож навіть за ідеального сценарію, якщо всі укриття відкриті та доступні, близько 30% населення міста залишаються поза захистом.]", icon="📌")
+    st.html(
+        """
+        <div style="
+            background-color: #ffeef0; 
+            border-left: 5px solid #ff4b4b; 
+            padding: 16px; 
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #262730;
+            line-height: 1.5;
+        ">
+            На ~2 900 000 осіб існує ~2 000 000 місць в укриттях. 
+            Тож навіть за ідеального сценарію, якщо всі укриття відкриті та доступні, 
+            близько 30% населення міста залишаються поза захистом.
+        </div>
+        """
+    )
+
+    #st.info(":red-background[На ~2 900 000 осіб існує ~2 000 000 укриттів. Тож навіть за ідеального сценарію, якщо всі укриття відкриті та доступні, близько 30% населення міста залишаються поза захистом.]", icon="📌")
 
     bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person", ascending=True)
     district_order = bar_df["district"].tolist()
