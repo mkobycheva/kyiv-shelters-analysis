@@ -561,7 +561,7 @@ elif section == "Типи укриттів":
         category_orders={
             "Тип": shelter_kinds_categories
         },
-        color_discrete_sequence=['#4C78A8', '#72B7B2', '#E45756', '#54A24B', '#F58518'],
+        color_discrete_sequence=['#4C78A8', '#F58518', '#E45756', '#54A24B', '#72B7B2'],
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if shelter_kind_percent else "Кількість"},
