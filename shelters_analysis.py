@@ -571,6 +571,11 @@ elif section == "Типи укриттів":
         legend=dict(orientation="h", y=-0.25),
         margin=dict(l=0, r=0, t=10, b=70)
     )
+
+    fig_shelter_kind.update_xaxes(
+        range=[0, 100] if shelter_kind_percent else [0,
+                                                     shelter_kind_dist.groupby("district")["values"].sum().max() * 1.05]
+    )
     st.plotly_chart(fig_shelter_kind, width="stretch")
 
     st.divider()
