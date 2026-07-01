@@ -609,7 +609,10 @@ elif section == "Типи укриттів":
     fig_location_type.update_layout(
         legend=dict(orientation="h", y=-0.25),
         margin=dict(l=0, r=0, t=10, b=70),
-        yaxis=dict(categoryorder="total ascending"),
+        yaxis = dict(
+            categoryorder="array",
+            categoryarray=location_type_order,
+        ),
     )
     st.plotly_chart(fig_location_type, use_container_width=True)
 
