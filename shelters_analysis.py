@@ -433,7 +433,7 @@ if section == "Місткість":
         x=0.6,
         line_width=2,
         line_dash="dash",
-        line_color="rgba(255, 0, 0, 0.3)",
+        line_color="rgba(255, 0, 0, 0.4)",
         annotation_text="Норма площі",
         annotation_position="top right"
     )
@@ -441,7 +441,6 @@ if section == "Місткість":
     fig_bar.update_layout(
         coloraxis_showscale=False,
         margin=dict(l=0, r=80, t=0, b=0),
-        #title=dict(text="М² укриття на людину:", font=dict(size=14)),
         yaxis=dict(tickfont=dict(size=12)),
     )
     st.plotly_chart(fig_bar, use_container_width=True)
@@ -460,7 +459,7 @@ if section == "Місткість":
         ">
             Згідно з Державними будівельними нормами (ДБН) України, 
             мінімальна норма площі в укритті становить 0,6 м² на особу.
-            Цю вимогу проходять половина районів.
+            Цю вимогу проходить половина районів.
         </div>
         """
     )
