@@ -338,7 +338,7 @@ if section == "Місткість":
         locations="district",
         featureidkey="properties.district",
         color="population_by_capacity",
-        color_continuous_scale="Reds",
+        color_continuous_scale="RdYlGn_r",
         mapbox_style="carto-positron",
         zoom=9.3,
         center={"lat": 50.40, "lon": 30.57},
