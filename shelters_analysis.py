@@ -429,14 +429,42 @@ if section == "Місткість":
         labels={"area_per_person": "М² на людину", "district": "Район"},
         height=420,
     )
+    fig_bar.add_vline(
+        x=0.6,
+        line_width=3,
+        line_dash="dash",
+        line_color="red",
+        annotation_text="Норма площі",
+        annotation_position="top right"
+    )
     fig_bar.update_traces(texttemplate="%{text:.2f} м²", textposition="outside")
     fig_bar.update_layout(
         coloraxis_showscale=False,
-        margin=dict(l=0, r=80, t=30, b=0),
+        margin=dict(l=0, r=80, t=0, b=0),
         #title=dict(text="М² укриття на людину:", font=dict(size=14)),
         yaxis=dict(tickfont=dict(size=12)),
     )
     st.plotly_chart(fig_bar, use_container_width=True)
+
+    st.html(
+        """
+        <div style="
+            background-color: #ffeef0; 
+            border-left: 5px solid #ff4b4b; 
+            padding: 16px; 
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #262730;
+            line-height: 1.5;
+        ">
+            Щоб поглянути на питання простору з різних кутів, окрім місткості укриттів ми 
+            оцінили ще їх площу. Згідно з Державними будівельними нормами (ДБН) України, 
+            мінімальна норма площі в укритті становить 0,6 м² на особу, і більшість районів проходять 
+            цю вимогу.
+        </div>
+        """
+    )
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 2. ТИПИ УКРИТТІВ
