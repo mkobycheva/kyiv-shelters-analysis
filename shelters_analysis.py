@@ -568,7 +568,7 @@ elif section == "Типи укриттів":
 
     location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
     location_type_order = (
-        location_type_dist[shelter_kind_dist["Тип"] == "Заглиблена"]
+        location_type_dist[location_type_dist["Тип"] == "Заглиблена"]
         .set_index("district")["percent"]
         .reindex(shelter_kind_dist["district"].unique(), fill_value=0)
         .sort_values(ascending=True)
