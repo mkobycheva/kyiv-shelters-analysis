@@ -627,7 +627,7 @@ elif section == "Типи укриттів":
         x="percent",
         y="district",
         color="Тип",
-        color_discrete_sequence=px.colors.qualitative.Safe,
+        color_discrete_sequence=px.colors.qualitative.G10,
         orientation="h",
         barmode="stack",
         labels={"percent": "%", "district": ""},
