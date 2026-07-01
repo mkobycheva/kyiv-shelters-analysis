@@ -544,14 +544,14 @@ elif section == "Типи укриттів":
         "Найпростіше укриття"
     ]
 
-    num_categories = len(shelter_kinds_categories)
-    start = 0.1
-    end = 0.47
-    step = (end - start) / (num_categories - 1)
-    sample_points = [start + i * step for i in range(num_categories)]
-
-    shelter_kinds_colors = px.colors.sample_colorscale("Reds_r", sample_points)
-    shelter_kinds_color_map = dict(zip(shelter_kinds_categories, shelter_kinds_colors))
+    # num_categories = len(shelter_kinds_categories)
+    # start = 0.1
+    # end = 0.47
+    # step = (end - start) / (num_categories - 1)
+    # sample_points = [start + i * step for i in range(num_categories)]
+    #
+    # shelter_kinds_colors = px.colors.sample_colorscale("Reds_r", sample_points)
+    # shelter_kinds_color_map = dict(zip(shelter_kinds_categories, shelter_kinds_colors))
 
     fig_shelter_kind = px.bar(
         shelter_kind_dist,
@@ -561,7 +561,7 @@ elif section == "Типи укриттів":
         category_orders={
             "Тип": shelter_kinds_categories
         },
-        color_discrete_map=shelter_kinds_color_map,
+        color_discrete_sequence=px.colors.qualitative.Pastel,
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if shelter_kind_percent else "Кількість"},
@@ -602,14 +602,14 @@ elif section == "Типи укриттів":
         "Напівзаглиблена"
     ]
 
-    num_categories = len(location_type_categories)
-    start = 0.4
-    end = 0.67
-    step = (end - start) / (num_categories - 1)
-    sample_points = [start + i * step for i in range(num_categories)]
-
-    location_type_colors = px.colors.sample_colorscale("Oranges_r", sample_points)
-    location_type_color_map = dict(zip(location_type_categories, location_type_colors))
+    # num_categories = len(location_type_categories)
+    # start = 0.4
+    # end = 0.67
+    # step = (end - start) / (num_categories - 1)
+    # sample_points = [start + i * step for i in range(num_categories)]
+    #
+    # location_type_colors = px.colors.sample_colorscale("Oranges_r", sample_points)
+    # location_type_color_map = dict(zip(location_type_categories, location_type_colors))
 
     fig_location_type = px.bar(
         location_type_dist,
@@ -619,7 +619,7 @@ elif section == "Типи укриттів":
         category_orders={
             "Тип": location_type_categories
         },
-        color_discrete_map=location_type_color_map,
+        color_discrete_sequence=px.colors.qualitative.Pastel1,
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if location_type_percent else "Кількість"},
@@ -662,7 +662,7 @@ elif section == "Типи укриттів":
         x="values",
         y="district",
         color="Тип",
-        color_discrete_sequence=px.colors.qualitative.G10,
+        color_discrete_sequence=px.colors.qualitative.Pastel2,
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if functional_percent else "Кількість"},
