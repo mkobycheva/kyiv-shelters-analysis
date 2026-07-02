@@ -697,7 +697,7 @@ elif section == "Типи укриттів":
     functional_dist = functional_dist.sort_values("district")
 
     functional_categories = [
-        "Підвали та техприміщення",  # Тепер вона перша і буде в самому лівому краю (біля x=0)
+        "Підвали та техприміщення",
         "Не визначено",
         "Комерційні та побутові приміщення",
         "Навчальні приміщення",
@@ -851,14 +851,14 @@ elif section == "Доступність і відкритість":
     total_mgn = agg["df_total_mgn"]
     st.metric("Доступних укриттів у Києві", f"{total_mgn}%")
 
-    mgn = agg["mgn_report"].sort_values("Доступно для МГН (%)", ascending=True)
+    mgn = agg["mgn_report"].sort_values("Доступно для МГН (%)", ascending=False)
     fig_mgn = px.bar(
         mgn,
         x="Доступно для МГН (%)",
         y="Район міста",
         orientation="h",
         color="Доступно для МГН (%)",
-        color_continuous_scale="RdYlGn",
+        color_continuous_scale="RdYlGn_r",
         range_color=[0, 100],
         text="Доступно для МГН (%)",
         labels={"Доступно для МГН (%)": "%", "Район міста": ""},
@@ -875,42 +875,23 @@ elif section == "Доступність і відкритість":
 
     st.subheader("Відкритість укриттів")
 
-    oa_col1, oa_col2 = st.columns([2, 1])
+    dist_oa = agg["district_open_access"]
+    always_open = dist_oa[dist_oa["open_access"] == "Постійно відчинене для населення"][["district", "percent"]]
+    order = always_open.sort_values("percent")["district"].tolist()
 
-    with oa_col1:
-        dist_oa = agg["district_open_access"]
-        always_open = dist_oa[dist_oa["open_access"] == "Постійно відчинене для населення"][["district", "percent"]]
-        order = always_open.sort_values("percent")["district"].tolist()
-
-        fig_oa_bar = px.bar(
-            dist_oa,
-            x="percent",
-            y="district",
-            color="open_access",
-            orientation="h",
-            barmode="stack",
-            category_orders={"district": order},
-            labels={"percent": "%", "district": "", "open_access": "Доступ"},
-            height=400,
-        )
-        fig_oa_bar.update_layout(
-            legend=dict(orientation="h", y=-0.3, title=""),
-            margin=dict(l=0, r=0, t=10, b=60),
-        )
-        st.plotly_chart(fig_oa_bar, width="stretch")
-
-    with oa_col2:
-        kyiv_oa = agg["kyiv_open_access"]
-        fig_donut = px.pie(
-            kyiv_oa,
-            names="open_access",
-            values="shelter_count",
-            hole=0.5,
-            height=400,
-        )
-        fig_donut.update_traces(textposition="inside", textinfo="percent")
-        fig_donut.update_layout(
-            legend=dict(orientation="v", y=0.5),
-            margin=dict(l=0, r=0, t=10, b=0),
-        )
-        st.plotly_chart(fig_donut, width="stretch")
+    fig_oa_bar = px.bar(
+        dist_oa,
+        x="percent",
+        y="district",
+        color="open_access",
+        orientation="h",
+        barmode="stack",
+        category_orders={"district": order},
+        labels={"percent": "%", "district": "", "open_access": "Доступ"},
+        height=400,
+    )
+    fig_oa_bar.update_layout(
+        legend=dict(orientation="h", y=-0.3, title=""),
+        margin=dict(l=0, r=0, t=10, b=60),
+    )
+    st.plotly_chart(fig_oa_bar, width="stretch")
