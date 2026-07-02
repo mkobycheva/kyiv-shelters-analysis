@@ -564,7 +564,7 @@ elif section == "Типи укриттів":
         color_discrete_sequence=['#4C78A8', '#F58518', '#E45756', '#54A24B', '#72B7B2'],
         orientation="h",
         barmode="stack",
-        labels={"values": "% укриттів" if shelter_kind_percent else "Кількість"},
+        labels={"values": "% укриттів" if shelter_kind_percent else "Кількість", "district": "Район"},
         height=440,
     )
     fig_shelter_kind.update_layout(
@@ -577,6 +577,25 @@ elif section == "Типи укриттів":
                                                      shelter_kind_dist.groupby("district")["values"].sum().max() * 1.05]
     )
     st.plotly_chart(fig_shelter_kind, width="stretch")
+
+    st.html(
+        """
+        <div style="
+            background-color: #ffeef0; 
+            border-left: 5px solid #ff4b4b; 
+            padding: 16px; 
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #262730;
+            line-height: 1.5;
+        ">
+            Абсолютна більшість об’єктів — це найпростіші укриття, тобто пристосовані підвали, 
+            що не забезпечують повноцінних захисних властивостей. Частка повноцінних сховищ у Києві 
+            становить лише близько 2%.
+        </div>
+        """
+    )
 
     st.divider()
     st.subheader("Тип локації")
@@ -627,7 +646,7 @@ elif section == "Типи укриттів":
         color_discrete_sequence=['#B279A2', '#FF9DA6', '#9D755D'],
         orientation="h",
         barmode="stack",
-        labels={"values": "% укриттів" if location_type_percent else "Кількість"},
+        labels={"values": "% укриттів" if location_type_percent else "Кількість", "district": "Район"},
         height=440,
     )
     fig_location_type.update_layout(
@@ -635,6 +654,23 @@ elif section == "Типи укриттів":
         margin=dict(l=0, r=0, t=10, b=70)
     )
     st.plotly_chart(fig_location_type, width="stretch")
+
+    st.html(
+        """
+        <div style="
+            background-color: #ffeef0; 
+            border-left: 5px solid #ff4b4b; 
+            padding: 16px; 
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #262730;
+            line-height: 1.5;
+        ">
+            Майже всі укриття Києва є заглибленими, що чудовим сигналом.
+        </div>
+        """
+    )
 
     st.divider()
     st.subheader("Призначення")
@@ -652,14 +688,12 @@ elif section == "Типи укриттів":
         .sort_values(ascending=True)
     )
 
-    # 2. Перетворюємо "district" на категоріальний тип Pandas із чітким порядком
     functional_dist["district"] = pd.Categorical(
         functional_dist["district"],
         categories=functional_sorting_series.index,
         ordered=True
     )
 
-    # 3. Сортуємо сам датафрейм
     functional_dist = functional_dist.sort_values("district")
 
     fig_functional = px.bar(
@@ -670,7 +704,7 @@ elif section == "Типи укриттів":
         color_discrete_sequence=px.colors.qualitative.Prism,
         orientation="h",
         barmode="stack",
-        labels={"values": "% укриттів" if functional_percent else "Кількість"},
+        labels={"values": "% укриттів" if functional_percent else "Кількість", "district": "Район"},
         height=440,
     )
     fig_functional.update_layout(
@@ -678,6 +712,51 @@ elif section == "Типи укриттів":
         margin=dict(l=0, r=0, t=10, b=70)
     )
     st.plotly_chart(fig_functional, width="stretch")
+
+    st.html(
+        """
+        <div style="
+            background-color: #ffeef0; 
+            border-left: 5px solid #ff4b4b; 
+            padding: 16px; 
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #262730;
+            line-height: 1.5;
+        ">
+            Найбільшу частку укриттів становлять "Приміщення іншого призначення" (перейменовані у "Підвали і техприміщення"). 
+            Наступними йдуть приміщення не визначеного призначення, які або є спеціалізованими сховищами, або просто не містять інформацію 
+            про їх тип.
+        </div>
+        """
+    )
+
+    st.markdown("""
+    <div style="
+        background-color: #f1f3f5; 
+        border-radius: 6px; 
+        padding: 12px 16px; 
+        margin: 10px 0 25px 0;
+        line-height: 1.4;
+    ">
+        <p style="font-size: 0.78rem; color: #555555; margin: 0 0 8px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+            ℹ️ Нотатка щодо агрегації та перейменування категорій укриттів
+        </p>
+        <p style="font-size: 0.75rem; color: #666666; margin: 0 0 6px 0;">
+            Для уникнення візуального перевантаження графіків дрібні типи функціонального призначення (частка кожного менше 5%) були об'єднані в укрупнені групи за змістом, а базові технічні статуси перейменовано для кращого сприйняття:
+        </p>
+        <ul style="font-size: 0.75rem; color: #666666; margin: 0; padding-left: 20px;">
+            <li><b>«Як приміщення іншого призначення»</b> → змінено на <b>«Підвали та техприміщення»</b> (найбільша категорія універсальних просторів та підвалів житлового фонду).</li>
+            <li><b>«Не застосовується»</b> → змінено на <b>«Не визначено»</b> (спеціалізовані чисті сховища або об'єкти без зафіксованого використання у мирний час).</li>
+            <li><b>«Гаражі або стоянки автомобілів та автокарів»</b> → спрощено до <b>«Гаражі та автостоянки»</b>.</li>
+            <li><b>«Приміщення для проведення навчальних занять»</b> → спрощено до <b>«Навчальні приміщення»</b>.</li>
+            <li><b>Заклади культури, охорони здоров'я, виставкові зали та спортивні споруди</b> → агреговано в єдину групу <b>«Громадські, культурні та медичні заклади»</b>.</li>
+            <li><b>Торгівля, громадське харчування, побутове обслуговування та гардеробні</b> → агреговано в <b>«Комерційні та побутові приміщення»</b>.</li>
+            <li><b>Адміністративні, офісні, складські, виробничі приміщення та аварійні служби</b> → агреговано в <b>«Адміністративні та виробничо-складські приміщення»</b>.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 3. СТАН СИСТЕМ
