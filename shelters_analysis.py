@@ -897,7 +897,7 @@ elif section == "Доступність і відкритість":
     oa_percent = st.toggle("Показати у %", key="toggle_oa_percent")
 
     dist_oa = agg["district_open_access"]
-    dist_oa["values"] = dist_oa["percent"] if oa_percent else oa_percent["shelter_count"]
+    dist_oa["values"] = dist_oa["percent"] if oa_percent else dist_oa["shelter_count"]
 
     oa_sorting_series = (
         dist_oa[dist_oa["Доступ"] == "Постійно відчинене для населення"]
