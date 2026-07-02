@@ -858,7 +858,7 @@ elif section == "Доступність і відкритість":
         y="Район міста",
         orientation="h",
         color="Доступно для МГН (%)",
-        color_continuous_scale="RdYlGn_r",
+        color_continuous_scale="Reds_r",
         range_color=[0, 100],
         text="Доступно для МГН (%)",
         labels={"Доступно для МГН (%)": "%", "Район міста": ""},
@@ -871,23 +871,67 @@ elif section == "Доступність і відкритість":
     )
     st.plotly_chart(fig_mgn, width="stretch")
 
+    st.html(
+        """
+        <div style="
+            background-color: #ffeef0; 
+            border-left: 5px solid #ff4b4b; 
+            padding: 16px; 
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #262730;
+            line-height: 1.5;
+        ">
+            Лише 13,4% київських укриттів доступні для маломобільних груп населення. Розрив між районами
+             вражає: від більше третини у Подільському до ~3% у Шевченківському. Для людей з інвалідністю, 
+             літніх людей та батьків із дитячими візками більшість позначок на карті фактично не є реальною можливістю убезпечитися.
+        </div>
+        """
+    )
+
     st.divider()
 
     st.subheader("Відкритість укриттів")
 
+    oa_percent = st.toggle("Показати у %", key="toggle_oa_percent")
+
     dist_oa = agg["district_open_access"]
-    always_open = dist_oa[dist_oa["open_access"] == "Постійно відчинене для населення"][["district", "percent"]]
-    order = always_open.sort_values("percent")["district"].tolist()
+    dist_oa["values"] = dist_oa["percent"] if oa_percent else oa_percent["shelter_count"]
+
+    oa_sorting_series = (
+        dist_oa[dist_oa["Доступ"] == "Постійно відчинене для населення"]
+        .set_index("district")["percent"]
+        .sort_values(ascending=True)
+    )
+
+    dist_oa["district"] = pd.Categorical(
+        dist_oa["district"],
+        categories=oa_sorting_series.index,
+        ordered=True
+    )
+
+    dist_oa = dist_oa.sort_values("district")
+
+    oa_categories = [
+        "Постійно відчинене для населення",
+        "Для населення у робочий час",
+        "Відчинене для населення лише у разі оповіщення",
+        "Лише для працівників у робочий час",
+        "Безперешкодний доступ не забезпечено"
+    ]
 
     fig_oa_bar = px.bar(
         dist_oa,
         x="percent",
         y="district",
         color="open_access",
+        category_orders={
+            "Доступ": oa_categories
+        },
         orientation="h",
         barmode="stack",
-        category_orders={"district": order},
-        labels={"percent": "%", "district": "", "open_access": "Доступ"},
+        labels={"values": "% укриттів" if oa_percent else "Кількість", "district": "", "open_access": "Доступ"},
         height=400,
     )
     fig_oa_bar.update_layout(
@@ -895,3 +939,21 @@ elif section == "Доступність і відкритість":
         margin=dict(l=0, r=0, t=10, b=60),
     )
     st.plotly_chart(fig_oa_bar, width="stretch")
+
+    st.html(
+        """
+        <div style="
+            background-color: #ffeef0; 
+            border-left: 5px solid #ff4b4b; 
+            padding: 16px; 
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #262730;
+            line-height: 1.5;
+        ">
+            Далеко не всі укриття доступні цілодобово: значна частина з них відчинена лише в робочий час, 
+            якась частка призначена виключно для працівників, а інші відкриваються лише за умови попереднього оповіщення.
+        </div>
+        """
+    )
