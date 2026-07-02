@@ -714,7 +714,7 @@ elif section == "Типи укриттів":
         category_orders={
             "Тип": functional_categories
         },
-        color_discrete_sequence=px.colors.qualitative.Prism_r,
+        color_discrete_sequence=px.colors.qualitative.Prism,
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if functional_percent else "Кількість", "district": "Район"},
