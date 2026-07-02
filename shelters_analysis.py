@@ -923,11 +923,11 @@ elif section == "Доступність і відкритість":
 
     fig_oa_bar = px.bar(
         dist_oa,
-        x="percent",
+        x="values",
         y="district",
         color="open_access",
         category_orders={
-            "Доступ": oa_categories
+            "open_access": oa_categories
         },
         orientation="h",
         barmode="stack",
