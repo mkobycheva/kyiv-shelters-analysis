@@ -643,7 +643,7 @@ elif section == "Типи укриттів":
         category_orders={
             "Тип": location_type_categories
         },
-        color_discrete_sequence=['#B279A2', '#FF9DA6', '#9D755D'],
+        color_discrete_sequence=px.colors.qualitative.Safe,
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if location_type_percent else "Кількість", "district": "Район"},
@@ -741,7 +741,7 @@ elif section == "Типи укриттів":
         margin: 10px 0 25px 0;
         line-height: 1.4;
     ">
-        <p style="font-size: 0.78rem; color: #555555; margin: 0 0 8px 0; font-weight: 600; letter-spacing: 0.5px;">
+        <p style="font-size: 0.78rem; color: #555555; margin: 0 0 8px 0; font-weight: 600;">
             ℹ️ Як були агреговані і перейменовані категорії укриттів
         </p>
         <p style="font-size: 0.75rem; color: #666666; margin: 0 0 6px 0;">
