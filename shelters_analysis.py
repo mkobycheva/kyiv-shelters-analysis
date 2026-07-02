@@ -696,11 +696,24 @@ elif section == "Типи укриттів":
 
     functional_dist = functional_dist.sort_values("district")
 
+    functional_categories = [
+        "Громадські, культурні та медичні заклади",
+        "Адміністративні та виробничо-складські приміщення",
+        "Гаражі та автостоянки",
+        "Навчальні приміщення",
+        "Комерційні та побутові приміщення",
+        "Не визначено",
+        "Підвали та техприміщення"  # Тепер вона буде в самому лівому краю
+    ]
+
     fig_functional = px.bar(
         functional_dist,
         x="values",
         y="district",
-        color="Тип",
+        color="Tip",
+        category_orders={
+            "Тип": functional_categories  # Задаємо кастомний порядок відображення
+        },
         color_discrete_sequence=px.colors.qualitative.Prism,
         orientation="h",
         barmode="stack",
