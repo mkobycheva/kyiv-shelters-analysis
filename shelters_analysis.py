@@ -703,16 +703,16 @@ elif section == "Типи укриттів":
         "Навчальні приміщення",
         "Комерційні та побутові приміщення",
         "Не визначено",
-        "Підвали та техприміщення"  # Тепер вона буде в самому лівому краю
+        "Підвали та техприміщення"
     ]
 
     fig_functional = px.bar(
         functional_dist,
         x="values",
         y="district",
-        color="Tip",
+        color="Тип",
         category_orders={
-            "Тип": functional_categories  # Задаємо кастомний порядок відображення
+            "Тип": functional_categories
         },
         color_discrete_sequence=px.colors.qualitative.Prism,
         orientation="h",
