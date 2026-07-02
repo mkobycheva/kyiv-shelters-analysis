@@ -900,7 +900,7 @@ elif section == "Доступність і відкритість":
     dist_oa["values"] = dist_oa["percent"] if oa_percent else dist_oa["shelter_count"]
 
     oa_sorting_series = (
-        dist_oa[dist_oa["Доступ"] == "Постійно відчинене для населення"]
+        dist_oa[dist_oa["open_access"] == "Постійно відчинене для населення"]
         .set_index("district")["percent"]
         .sort_values(ascending=True)
     )
