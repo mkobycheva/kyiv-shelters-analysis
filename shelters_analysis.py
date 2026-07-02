@@ -643,7 +643,7 @@ elif section == "Типи укриттів":
         category_orders={
             "Тип": location_type_categories
         },
-        color_discrete_sequence=px.colors.qualitative.Safe,
+        color_discrete_sequence=["#cc6677","#ddcc77","#88ccee"],
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if location_type_percent else "Кількість", "district": "Район"},
