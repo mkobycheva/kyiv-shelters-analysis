@@ -697,13 +697,13 @@ elif section == "Типи укриттів":
     functional_dist = functional_dist.sort_values("district")
 
     functional_categories = [
-        "Громадські, культурні та медичні заклади",
-        "Адміністративні та виробничо-складські приміщення",
-        "Гаражі та автостоянки",
-        "Навчальні приміщення",
-        "Комерційні та побутові приміщення",
+        "Підвали та техприміщення",  # Тепер вона перша і буде в самому лівому краю (біля x=0)
         "Не визначено",
-        "Підвали та техприміщення"
+        "Комерційні та побутові приміщення",
+        "Навчальні приміщення",
+        "Гаражі та автостоянки",
+        "Адміністративні та виробничо-складські приміщення",
+        "Громадські, культурні та медичні заклади"
     ]
 
     fig_functional = px.bar(
@@ -714,7 +714,7 @@ elif section == "Типи укриттів":
         category_orders={
             "Тип": functional_categories
         },
-        color_discrete_sequence=px.colors.qualitative.Prism,
+        color_discrete_sequence=px.colors.qualitative.Prism_r,
         orientation="h",
         barmode="stack",
         labels={"values": "% укриттів" if functional_percent else "Кількість", "district": "Район"},
