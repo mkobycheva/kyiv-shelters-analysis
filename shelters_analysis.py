@@ -672,105 +672,105 @@ elif section == "Типи укриттів":
         """
     )
 
-    st.divider()
-    st.subheader("Призначення")
-    functional_kyiv = agg["kyiv_functional"].rename(columns={"functional_purpose_group": "Тип"})
-    render_kpi_row("Призначення", functional_kyiv)
-
-    functional_percent = st.toggle("Показати у %", key="toggle_functional_percent")
-
-    functional_dist = agg["district_functional"].rename(columns={"functional_purpose_group": "Тип"})
-    functional_dist["values"] = functional_dist["percent"] if functional_percent else functional_dist["shelter_count"]
-
-    functional_sorting_series = (
-        functional_dist[functional_dist["Тип"] == "Підвали та техприміщення"]
-        .set_index("district")["percent"]
-        .sort_values(ascending=True)
-    )
-
-    functional_dist["district"] = pd.Categorical(
-        functional_dist["district"],
-        categories=functional_sorting_series.index,
-        ordered=True
-    )
-
-    functional_dist = functional_dist.sort_values("district")
-
-    functional_categories = [
-        "Підвали та техприміщення",
-        "Не визначено",
-        "Комерційні та побутові приміщення",
-        "Навчальні приміщення",
-        "Гаражі та автостоянки",
-        "Адміністративні та виробничо-складські приміщення",
-        "Громадські, культурні та медичні заклади"
-    ]
-
-    fig_functional = px.bar(
-        functional_dist,
-        x="values",
-        y="district",
-        color="Тип",
-        category_orders={
-            "Тип": functional_categories
-        },
-        color_discrete_sequence=px.colors.qualitative.Prism,
-        orientation="h",
-        barmode="stack",
-        labels={"values": "% укриттів" if functional_percent else "Кількість", "district": "Район"},
-        height=440,
-    )
-    fig_functional.update_layout(
-        legend=dict(orientation="h", y=-0.25),
-        margin=dict(l=0, r=0, t=10, b=70)
-    )
-    st.plotly_chart(fig_functional, width="stretch")
-
-    st.html(
-        """
-        <div style="
-            background-color: #ffeef0; 
-            border-left: 5px solid #ff4b4b; 
-            padding: 16px; 
-            border-radius: 8px;
-            margin: 10px 0;
-            font-size: 14px;
-            color: #262730;
-            line-height: 1.5;
-        ">
-            Найбільшу частку укриттів становлять "Приміщення іншого призначення" (перейменовані у "Підвали і техприміщення"). 
-            Наступними йдуть приміщення не визначеного призначення, які або є спеціалізованими сховищами, або просто не містять інформацію 
-            про їх тип.
-        </div>
-        """
-    )
-
-    st.markdown("""
-    <div style="
-        background-color: #f1f3f5; 
-        border-left: 5px solid #6E6F71; 
-        border-radius: 8px; 
-        padding: 12px 16px; 
-        margin: 10px 0 25px 0;
-        line-height: 1.4;
-    ">
-        <p style="font-size: 0.78rem; color: #555555; margin: 0 0 8px 0; font-weight: 600;">
-            ℹ️ Як були агреговані і перейменовані категорії укриттів
-        </p>
-        <p style="font-size: 0.75rem; color: #666666; margin: 0 0 6px 0;">
-            Дрібні типи призначення були об'єднані в більші групи за змістом, а деякі - перейменовано для кращого сприйняття:
-        </p>
-        <ul style="font-size: 0.75rem; color: #666666; margin: 0; padding-left: 20px;">
-            <li><b>«Як приміщення іншого призначення»</b> → <b>«Підвали та техприміщення»</b> (найбільша категорія універсальних просторів та підвалів житлового фонду).</li>
-            <li><b>«Не застосовується»</b> → <b>«Не визначено»</b> (спеціалізовані чисті сховища або об'єкти без зафіксованого використання у мирний час).</li>
-            <li><b>«Гаражі або стоянки автомобілів та автокарів»</b> → <b>«Гаражі та автостоянки»</b>.</li>
-            <li><b>«Приміщення для проведення навчальних занять»</b> → <b>«Навчальні приміщення»</b>.</li>
-            <li><b>Заклади культури, охорони здоров'я, виставкові зали та спортивні споруди</b> → єдина група <b>«Громадські, культурні та медичні заклади»</b>.</li>
-            <li><b>Торгівля, громадське харчування, побутове обслуговування та гардеробні</b> → єдина група <b>«Комерційні та побутові приміщення»</b>.</li>
-            <li><b>Адміністративні, офісні, складські, виробничі приміщення та аварійні служби</b> → єдина група <b>«Адміністративні та виробничо-складські приміщення»</b>.</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    # st.divider()
+    # st.subheader("Призначення")
+    # functional_kyiv = agg["kyiv_functional"].rename(columns={"functional_purpose_group": "Тип"})
+    # render_kpi_row("Призначення", functional_kyiv)
+    #
+    # functional_percent = st.toggle("Показати у %", key="toggle_functional_percent")
+    #
+    # functional_dist = agg["district_functional"].rename(columns={"functional_purpose_group": "Тип"})
+    # functional_dist["values"] = functional_dist["percent"] if functional_percent else functional_dist["shelter_count"]
+    #
+    # functional_sorting_series = (
+    #     functional_dist[functional_dist["Тип"] == "Підвали та техприміщення"]
+    #     .set_index("district")["percent"]
+    #     .sort_values(ascending=True)
+    # )
+    #
+    # functional_dist["district"] = pd.Categorical(
+    #     functional_dist["district"],
+    #     categories=functional_sorting_series.index,
+    #     ordered=True
+    # )
+    #
+    # functional_dist = functional_dist.sort_values("district")
+    #
+    # functional_categories = [
+    #     "Підвали та техприміщення",
+    #     "Не визначено",
+    #     "Комерційні та побутові приміщення",
+    #     "Навчальні приміщення",
+    #     "Гаражі та автостоянки",
+    #     "Адміністративні та виробничо-складські приміщення",
+    #     "Громадські, культурні та медичні заклади"
+    # ]
+    #
+    # fig_functional = px.bar(
+    #     functional_dist,
+    #     x="values",
+    #     y="district",
+    #     color="Тип",
+    #     category_orders={
+    #         "Тип": functional_categories
+    #     },
+    #     color_discrete_sequence=px.colors.qualitative.Prism,
+    #     orientation="h",
+    #     barmode="stack",
+    #     labels={"values": "% укриттів" if functional_percent else "Кількість", "district": "Район"},
+    #     height=440,
+    # )
+    # fig_functional.update_layout(
+    #     legend=dict(orientation="h", y=-0.25),
+    #     margin=dict(l=0, r=0, t=10, b=70)
+    # )
+    # st.plotly_chart(fig_functional, width="stretch")
+    #
+    # st.html(
+    #     """
+    #     <div style="
+    #         background-color: #ffeef0;
+    #         border-left: 5px solid #ff4b4b;
+    #         padding: 16px;
+    #         border-radius: 8px;
+    #         margin: 10px 0;
+    #         font-size: 14px;
+    #         color: #262730;
+    #         line-height: 1.5;
+    #     ">
+    #         Найбільшу частку укриттів становлять "Приміщення іншого призначення" (перейменовані у "Підвали і техприміщення").
+    #         Наступними йдуть приміщення не визначеного призначення, які або є спеціалізованими сховищами, або просто не містять інформацію
+    #         про їх тип.
+    #     </div>
+    #     """
+    # )
+    #
+    # st.markdown("""
+    # <div style="
+    #     background-color: #f1f3f5;
+    #     border-left: 5px solid #6E6F71;
+    #     border-radius: 8px;
+    #     padding: 12px 16px;
+    #     margin: 10px 0 25px 0;
+    #     line-height: 1.4;
+    # ">
+    #     <p style="font-size: 0.78rem; color: #555555; margin: 0 0 8px 0; font-weight: 600;">
+    #         ℹ️ Як були агреговані і перейменовані категорії укриттів
+    #     </p>
+    #     <p style="font-size: 0.75rem; color: #666666; margin: 0 0 6px 0;">
+    #         Дрібні типи призначення були об'єднані в більші групи за змістом, а деякі - перейменовано для кращого сприйняття:
+    #     </p>
+    #     <ul style="font-size: 0.75rem; color: #666666; margin: 0; padding-left: 20px;">
+    #         <li><b>«Як приміщення іншого призначення»</b> → <b>«Підвали та техприміщення»</b> (найбільша категорія універсальних просторів та підвалів житлового фонду).</li>
+    #         <li><b>«Не застосовується»</b> → <b>«Не визначено»</b> (спеціалізовані чисті сховища або об'єкти без зафіксованого використання у мирний час).</li>
+    #         <li><b>«Гаражі або стоянки автомобілів та автокарів»</b> → <b>«Гаражі та автостоянки»</b>.</li>
+    #         <li><b>«Приміщення для проведення навчальних занять»</b> → <b>«Навчальні приміщення»</b>.</li>
+    #         <li><b>Заклади культури, охорони здоров'я, виставкові зали та спортивні споруди</b> → єдина група <b>«Громадські, культурні та медичні заклади»</b>.</li>
+    #         <li><b>Торгівля, громадське харчування, побутове обслуговування та гардеробні</b> → єдина група <b>«Комерційні та побутові приміщення»</b>.</li>
+    #         <li><b>Адміністративні, офісні, складські, виробничі приміщення та аварійні служби</b> → єдина група <b>«Адміністративні та виробничо-складські приміщення»</b>.</li>
+    #     </ul>
+    # </div>
+    # """, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 3. СТАН СИСТЕМ
