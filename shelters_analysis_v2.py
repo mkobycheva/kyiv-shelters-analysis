@@ -73,19 +73,23 @@ html {
     scroll-margin-top: 24px;
 }
 
+h3 {
+    font-size: 1.15rem !important;
+}
+
+[data-testid="stExpander"] [data-testid="stMarkdownContainer"] {
+    font-size: 13px;
+}
+
 .toc-link {
-    display: block;
-    padding: 8px 10px;
-    margin-bottom: 2px;
-    border-radius: 6px;
     color: #262730;
-    text-decoration: none;
+    text-decoration: none !important;
     font-size: 14px;
-    line-height: 1.3;
+    line-height: 1.6;
 }
 .toc-link:hover {
-    background: #ffeef0;
     color: #ff4b4b;
+    text-decoration: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -306,11 +310,32 @@ def build_aggregates(df):
 
 # ── Shared UI helpers ─────────────────────────────────────────────────────────
 def insight_card(html_content):
+    """Pink/red callout — for data-driven findings and conclusions."""
     st.html(
         f"""
         <div style="
             background-color: #ffeef0;
             border-left: 5px solid #ff4b4b;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #262730;
+            line-height: 1.5;
+        ">
+            {html_content}
+        </div>
+        """
+    )
+
+
+def info_card(html_content):
+    """Neutral gray-blue callout — for reference facts: norms, legal text, glossaries."""
+    st.html(
+        f"""
+        <div style="
+            background-color: #eef2f6;
+            border-left: 5px solid #6c7a89;
             padding: 16px;
             border-radius: 8px;
             margin: 10px 0;
@@ -382,63 +407,50 @@ kyiv_area_per_person = kyiv["total_area"] / kyiv["population"]
 
 # ── Sidebar: table of contents (anchor links, page scrolls in one piece) ─────
 SECTIONS = [
-    ("intro",    "🏠", "Вступ"),
-    ("about",    "📋", "Про дослідження"),
-    ("capacity", "🧮", "Місткість"),
-    ("area",     "📐", "Площа на людину"),
-    ("systems",  "⚙️", "Стан систем"),
-    ("access",   "🔓", "Доступність і відкритість"),
-    ("types",    "🏗️", "Типи укриттів"),
-    ("next",     "🎯", "Що далі"),
+    ("intro",    "Вступ"),
+    ("about",    "Про дослідження"),
+    ("capacity", "Місткість"),
+    ("area",     "Площа на людину"),
+    ("systems",  "Стан систем"),
+    ("access",   "Доступність і відкритість"),
+    ("types",    "Типи укриттів"),
+    ("next",     "Що далі"),
 ]
 
 st.sidebar.markdown("**Розділ**")
-toc_html = "".join(
-    f'<a class="toc-link" href="#{anchor_id}">{icon} {label}</a>'
-    for anchor_id, icon, label in SECTIONS
+toc_items = "".join(
+    f'<li><a class="toc-link" href="#{anchor_id}">{label}</a></li>'
+    for anchor_id, label in SECTIONS
 )
-st.sidebar.markdown(toc_html, unsafe_allow_html=True)
+st.sidebar.markdown(
+    f'<ul style="list-style:disc; padding-left:20px; margin:0;">{toc_items}</ul>',
+    unsafe_allow_html=True,
+)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 1. ВСТУП
 # ══════════════════════════════════════════════════════════════════════════════
 section_anchor("intro")
-st.title("Чи вміщаємось ми в укриття?")
+st.title("Чи вміщається Київ в укриття?")
 
-st.markdown(
-    """
-Ранок після чергового масованого ракетного обстрілу. У соцмережах вкотре ширяться
-фото переповнених станцій метро. У нас, як і у багатьох мешканців Києва, вкотре
-постало питання: чи вистачає киянам укриттів?
+col_intro_text, col_intro_img = st.columns([2, 1])
 
-В інтернеті легко знайти мапи сховищ Києва — тисячі точок, розкидані по місту.
-Але якщо на мапі так багато укриттів, чому ж метро все одно переповнене?
+with col_intro_text:
+    st.markdown(
+        """
+Після кожного масованого обстрілу в соціальних мережах ширяться фото переповненого метро. Ми спробували дослідити, в чому причина: чи точно киянам вистачає укриттів?
 
-Провівши власне опитування, ми зрозуміли: наявні мапи не показують повної картини.
-Окрема точка на мапі нічого не каже про співвідношення місткості й населення —
-ні по місту загалом, ні по районах.
+В інтернеті мапи укриттів лишаються єдиним джерелом інформації про сховища Києва, що ми змогли знайти, але вони не відображають повної картини. Поодинокі відмітки не дають розуміння про співвідношення місткості та кількості населення, загальної статистики по місту та по окремих його районах.
 
-Тож ми поставили собі просте запитання і спробували відповісти на нього цифрами.
-    """
-)
+Ця сторінка - спроба дати цілісний погляд на проблему укриттів Києва. Наші візуалізації відображають стан систем в укриттях, їх типи та доступність по районах міста. Також ми наводимо приклади, коли інформація з мап може вводити в оману.
+        """
+    )
+    st.metric("Людей на станціях метро під час атаки 2 червня 2026", "понад 41 000")
+    st.caption("Найбільше з 2024 року — джерело: звіт Омбудсмана, деталі в розділі «Про дослідження»")
 
-st.metric("Людей на станціях метро під час атаки 2 червня 2026", "понад 41 000")
-st.caption("Найбільше з 2024 року — джерело: звіт Омбудсмана, деталі в розділі «Про дослідження»")
-
-# TODO: користувач додасть фото
-image_or_placeholder("assets/metro_crowd.jpg", caption="Переповнена станція метро під час тривоги")
-
-st.divider()
-
-c1, c2, c3 = st.columns(3)
-c1.metric("Кількість укриттів, шт.", f"{int(kyiv['shelter_count']):,}")
-c2.metric("Загальна місткість, осіб", f"{int(kyiv['total_capacity']):,}")
-c3.metric("Загальна площа, м²", f"{int(kyiv['total_area']):,}")
-
-c4, c5, c6 = st.columns(3)
-c4.metric("Людей на 1 місце", f"{kyiv['population_by_capacity']:.1f}")
-c5.metric("Кількість населення, осіб", f"{int(kyiv['population']):,}")
-c6.metric("Площа на 1 людину, м²", f"{kyiv_area_per_person:.2f}")
+with col_intro_img:
+    # TODO: користувач додасть фото
+    image_or_placeholder("assets/metro_crowd.jpg", caption="Фото: КМДА")
 
 chapter_break()
 
@@ -448,63 +460,34 @@ chapter_break()
 section_anchor("about")
 st.title("Про дослідження")
 
-st.markdown(
-    """
-### Звідки ці дані
-
-Дані про укриття ми зібрали з офіційної Мапи укриттів Києва (shelters.dsns.gov.ua) —
-за допомогою python-скрипту витягнули всю доступну інформацію. Дані про населення
-районів — з сайту КМДА; втім останній перепис населення в Києві був у 2001 році,
-тож ці цифри — оцінка, а не точний підрахунок.
-    """
-)
-
-with st.expander("Повна методологія, джерела та обмеження"):
+with st.expander("Обмеження, джерела та методологія"):
     st.markdown(
         """
-**Як рахували показники**
+**Обмеження дослідження**
+1. Ми працюємо з даними про укриття, які нанесені на мапу, - не з тим, що існує насправді. Респонденти у нашому опитуванні неодноразово зазначали, що не всі сховища є на мапі
+2. Дані про кількість населення з офіційного джерела є спрогнозованими, адже останній перепис населення був більше 20 років тому
+3. Категоризація укриттів є здебільшого умовною: позначені однією категорією укриття зазвичай істотно різняться в умовах для перебування, а також сховища постійно класифікують некоректно: наприклад, метро часто відмічено як найпростіше укриття, коли за офіційними документами вони відносяться до споруд подвійного призначення.
+
+**Джерела даних**
+- Мапа укриттів Києва (єдина відкрита база даних про укриття, з якої ми витягнули інформацію за допомогою python): https://shelters.dsns.gov.ua/
+- Населення районів: https://kyivcity.gov.ua/kyiv_ta_miska_vlada/pro_kyiv/raiony_kyieva/
+- Геодані для мапи: https://github.com/denysboiko/kyivmap
+
+**Логіка розрахунку метрик**
 - «Людей на 1 місце» = населення району ÷ місткість укриттів району
 - «Площа на людину» = сумарна площа укриттів району ÷ населення району
 - Забезпеченість (вода/опалення/електрика/зв'язок): % укриттів району з наявною/справною категорією
 - Доступність для МГН: % укриттів району, позначених як доступні для маломобільних груп
 
-**Обмеження дослідження**
-- Ми працюємо з тим, що нанесено на мапу — не з тим, що існує насправді. Респонденти
-  нашого опитування неодноразово зазначали, що реальних укриттів більше, ніж позначених.
-- Дані про населення — прогнозні оцінки на основі поточного обліку демографічних змін,
-  реєстрації місця проживання та даних мобільних операторів, а не перепис.
-- Категоризація укриттів є здебільшого умовною: об'єкти однієї категорії часто істотно
-  різняться за станом. Крім того, сховища регулярно класифікують некоректно — наприклад,
-  метро часто позначене як «найпростіше укриття», хоча за офіційними документами належить
-  до споруд подвійного призначення (детальніше — у розділі «Типи укриттів»).
-
-**Джерела даних**
-- Мапа укриттів Києва: https://shelters.dsns.gov.ua/
-- Населення районів: https://kyivcity.gov.ua/kyiv_ta_miska_vlada/pro_kyiv/raiony_kyieva/
-- Методологія підрахунку населення: TODO — додати посилання (polityka.in.ua, tsn.ua)
-- Геодані для мапи: https://github.com/denysboiko/kyivmap
-- У роботі використовували генеративний ШІ для автоматизації написання скриптів парсингу
-  й візуалізацій та підсумування державних документів; за весь згенерований код і
-  написаний текст несемо відповідальність.
-
-TODO: додати повні посилання з наданого документа (звіт Омбудсмана, аудит КМДА, обстеження Fight For Right)
-
-**Попередні аудити (для порівняння)**
-- Звіт Омбудсмана (травень 2026): 93% перевірених укриттів мали недоліки; найбільша
-  проблема — доступність для маломобільних людей (27% без безбар'єрного доступу).
-- Позапланова перевірка КМДА (червень 2023): лише 65% укриттів придатні до використання
-  повністю; 14% не відповідають технічним вимогам взагалі.
-- Обстеження Fight For Right (2023): позначені на мапі "пандуси" в Солом'янському районі
-  виявились небезпечними залізними рейками, не пандусами.
-
 **Команда**
 
-Над проєктом працювали студентки Київської школи економіки: Марія Кобичева,
-Дарина Кальченко, Діана Алдошина, Лілія Червонецька, Валерія Михайлишина —
-у межах курсу «Дані і суспільство».
+Над проєктом працювали студентки Київської школи економіки Марія Кобичева, Дарина Кальченко, Діана Алдошина, Лілія Червонецька, Валерія Михайлишина у межах курсу «Дані і суспільство».
 
-Код і дані відкриті: github.com/mkobycheva/kyiv-shelters-analysis
-Питання та фідбек: maria.kobycheva@gmail.com
+У роботі використовували генеративний ШІ для автоматизації написання скриптів парсингу й візуалізацій та підсумування державних документів; за весь згенерований код і написаний текст несемо відповідальність.
+
+Код і дані: [github.com/mkobycheva/kyiv-shelters-analysis](http://github.com/mkobycheva/kyiv-shelters-analysis)
+
+Питання та фідбек: [maria.kobycheva@gmail.com](mailto:maria.kobycheva@gmail.com)
         """
     )
 
@@ -514,7 +497,7 @@ chapter_break()
 # 3. МІСТКІСТЬ
 # ══════════════════════════════════════════════════════════════════════════════
 section_anchor("capacity")
-st.title("Чи вміщається Київ в укриття?")
+st.title("Місткість укриттів")
 
 c1, c2, c3 = st.columns(3)
 c1.metric("Кількість укриттів, шт.", f"{int(kyiv['shelter_count']):,}")
@@ -527,7 +510,6 @@ c5.metric("Кількість населення, осіб", f"{int(kyiv['popula
 c6.metric("Площа на 1 людину, м²", f"{kyiv_area_per_person:.2f}")
 
 st.divider()
-st.subheader("Місткість укриттів по районах")
 
 cap = agg["district_cap"].copy()
 
@@ -603,7 +585,7 @@ fig_choro.update_layout(
         tickfont=dict(size=10)
     )
 )
-st.plotly_chart(fig_choro, width="stretch")
+st.plotly_chart(fig_choro, use_container_width=True)
 
 insight_card(
     """
@@ -621,56 +603,49 @@ chapter_break()
 section_anchor("area")
 st.title("Площа на людину")
 
-st.markdown(
-    """
-### 0,6 м² — як воно є, як має бути
+col_area_chart, col_area_text = st.columns([2, 1])
 
-Згідно з ДБН В.2.2-5:2023, мінімальна норма площі в укритті — 0,5–3,0 м² на особу
-залежно від типу об'єкта (0,6 м² — типове значення для найпростіших укриттів).
-Половина районів Києва цю норму не проходить.
+with col_area_chart:
+    bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person", ascending=True)
+    district_order = bar_df["district"].tolist()
+    fig_bar = px.bar(
+        bar_df,
+        x="area_per_person",
+        y="district",
+        orientation="h",
+        color="area_per_person",
+        color_continuous_scale="Oranges_r",
+        range_color=[0, 2],
+        text="area_per_person",
+        category_orders={"district": district_order},
+        labels={"area_per_person": "М² на людину", "district": "Район"},
+        height=420,
+    )
+    fig_bar.add_vline(
+        x=0.6,
+        line_width=2,
+        line_dash="dash",
+        line_color="rgba(255, 0, 0, 0.4)",
+        annotation_text="Норма площі",
+        annotation_position="top right"
+    )
+    fig_bar.update_traces(texttemplate="%{text:.2f} м²", textposition="outside")
+    fig_bar.update_layout(
+        coloraxis_showscale=False,
+        margin=dict(l=0, r=80, t=0, b=0),
+        yaxis=dict(tickfont=dict(size=12)),
+    )
+    st.plotly_chart(fig_bar, use_container_width=True)
 
-Але навіть там, де формально "норма" дотримана — чи достатньо 0,6 м² людині? Це площа
-менша за розгорнуту газету. Норма розрахована на компактне стояння чи сидіння, а не на
-реальний сценарій нічної тривоги, коли люди спускаються в укриття саме щоб поспати.
-
-Ми вважаємо, що ця норма не відповідає здоровому глузду в умовах, для яких вона
-насправді застосовується.
-    """
-)
-
-st.divider()
-st.subheader("Площа укриття на людину")
-
-bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person", ascending=True)
-district_order = bar_df["district"].tolist()
-fig_bar = px.bar(
-    bar_df,
-    x="area_per_person",
-    y="district",
-    orientation="h",
-    color="area_per_person",
-    color_continuous_scale="Oranges_r",
-    range_color=[0, 2],
-    text="area_per_person",
-    category_orders={"district": district_order},
-    labels={"area_per_person": "М² на людину", "district": "Район"},
-    height=420,
-)
-fig_bar.add_vline(
-    x=0.6,
-    line_width=2,
-    line_dash="dash",
-    line_color="rgba(255, 0, 0, 0.4)",
-    annotation_text="Норма площі",
-    annotation_position="top right"
-)
-fig_bar.update_traces(texttemplate="%{text:.2f} м²", textposition="outside")
-fig_bar.update_layout(
-    coloraxis_showscale=False,
-    margin=dict(l=0, r=80, t=0, b=0),
-    yaxis=dict(tickfont=dict(size=12)),
-)
-st.plotly_chart(fig_bar, width="stretch")
+with col_area_text:
+    info_card(
+        """
+        0,6 м² на одну особу - мінімум за нормами для найпростішого укриття (ДБН В.2.2-5:2023).
+        Крім того, що цю вимогу проходить половина районів, вона розрахована на посидіти в укритті,
+        а реальність нічних масованих тривог — це переночувати. Щоб лягти, людині треба ~1,8 м²
+        (односпальне ліжко), що втричі більше за прогнозований простір.
+        """
+    )
 
 chapter_break()
 
@@ -690,26 +665,19 @@ st.caption("% укриттів з наявною/справною системо
 
 st.divider()
 
-st.markdown(
-    f"""
-### Норма проти реальності
-
-Норми ДБН В.2.2-5:2023 для сховищ передбачають: автономну роботу до 48 годин,
-2 обов'язкові режими вентиляції, аварійний запас води 2-3 л/добу на особу.
-
-Втім, у серпні 2025 року Наказ МВС №579 перевів вимоги до водопостачання,
-резервного живлення, аптечок і засобів зв'язку для найпростіших укриттів
-з обов'язкових у рекомендаційні.
-
-Наша статистика показує, чому це важливо: опалення справне лише у третині
-укриттів Києва ({status['Опалення']}%), інтернет — менш ніж у третині ({status['Інтернет']}%). Враховуючи
-низькі температури минулої зими, це означає, що дві третини укриттів
-непридатні для тривалого перебування взимку.
+info_card(
+    """
+    Найпростіші укриття мають бути забезпечені електроживленням, освітленням, системами водопроводу
+    та каналізації, засобами зв'язку і оповіщення (телефоном, радіоприймачем, інтернетом, рекомендовано
+    встановлення Wi-Fi) (ДБН В.2.2-5:2023). До опалення вимог не знайшлось. Крім того, у серпні 2025 року
+    наказ МВС №579 змінив вимоги до водопостачання, каналізації, резервного живлення, аптечок і зв'язку
+    з обов'язкових на рекомендаційні.<br><br>
+    Для ПРУ, СПП та сховищ вимог більше: власне джерело електрики, очищення повітря, запас питної води
+    2-3 л/добу на особу і зв'язок, що не переривається - і все це має безперервно функціонувати 48 год.
     """
 )
 
 st.divider()
-st.subheader("По районах — % наявна/справна")
 
 water   = agg["water_report"][["Район міста", "Наявна/Справна (%)"]].rename(columns={"Наявна/Справна (%)": "Вода"})
 heating = agg["heating_report"][["Район міста", "Наявна/Справна (%)"]].rename(columns={"Наявна/Справна (%)": "Опалення"})
@@ -740,14 +708,13 @@ fig_heat.update_layout(
     margin=dict(l=0, r=0, t=10, b=0),
     xaxis=dict(side="top"),
 )
-st.plotly_chart(fig_heat, width="stretch")
+st.plotly_chart(fig_heat, use_container_width=True)
 
 insight_card(
     """
-    Електрикою забезпечені майже всі укриття, водою - більше половини, а от опалення і інтернет наявні лише в третині укриттів Києва.
-    Враховуючи низькі температури минулої зими, це фактично означає, що 2/3 укриттів непридатні для тривалого перебування в холодну пору року.
-    Інтернет, хоча і не є критичною інфраструктурою, уможливлює зв'язок з рідними та оперативний доступ до новин,
-    тож його відсутність створює інформаційний вакуум та підвищує рівень стресу містян.
+    Електрикою забезпечені майже всі укриття, водою - більше половини, а от опалення і інтернет
+    наявні лише в третині укриттів Києва. Враховуючи низькі температури минулої зими, це фактично
+    означає, що 2/3 укриттів непридатні для тривалого перебування в холодну пору року.
     """
 )
 
@@ -782,7 +749,7 @@ fig_mgn.update_layout(
     coloraxis_showscale=False,
     margin=dict(l=0, r=80, t=10, b=0),
 )
-st.plotly_chart(fig_mgn, width="stretch")
+st.plotly_chart(fig_mgn, use_container_width=True)
 
 insight_card(
     """
@@ -823,55 +790,58 @@ oa_categories = [
     "Безперешкодний доступ не забезпечено"
 ]
 
-fig_oa_bar = px.bar(
-    dist_oa,
-    x="values",
-    y="district",
-    color="open_access",
-    category_orders={
-        "open_access": oa_categories
-    },
-    orientation="h",
-    barmode="stack",
-    labels={"values": "% укриттів" if oa_percent else "Кількість", "district": "", "open_access": "Доступ"},
-    height=400,
-)
-fig_oa_bar.update_layout(
-    legend=dict(orientation="h", y=-0.3, title=""),
-    margin=dict(l=0, r=0, t=10, b=60),
-)
-st.plotly_chart(fig_oa_bar, width="stretch")
+col_oa_chart, col_oa_glossary = st.columns([2, 1])
 
-insight_card(
-    """
-    Далеко не всі укриття доступні цілодобово: значна частина з них відчинена лише в робочий час,
-    якась частка призначена виключно для працівників, а інші відкриваються лише за умови попереднього оповіщення.
-    """
-)
+with col_oa_chart:
+    fig_oa_bar = px.bar(
+        dist_oa,
+        x="values",
+        y="district",
+        color="open_access",
+        category_orders={
+            "open_access": oa_categories
+        },
+        orientation="h",
+        barmode="stack",
+        labels={"values": "% укриттів" if oa_percent else "Кількість", "district": "", "open_access": "Доступ"},
+        height=400,
+    )
+    fig_oa_bar.update_layout(
+        legend=dict(orientation="h", y=-0.3, title=""),
+        margin=dict(l=0, r=0, t=10, b=60),
+    )
+    st.plotly_chart(fig_oa_bar, use_container_width=True)
 
-with st.expander("Що означають ці категорії відкритості?"):
-    st.markdown(
+with col_oa_glossary:
+    info_card(
         """
-- **Постійно відчинене для населення** — доступ вільний у будь-який час доби
-- **Для населення у робочий час** — доступ обмежений годинами роботи закладу/установи
-- **Відчинене для населення лише у разі оповіщення** — двері відкриваються тільки
-  під час сигналу тривоги
-- **Лише для працівників у робочий час** — доступ мають тільки співробітники об'єкта
-- **Безперешкодний доступ не забезпечено** — вхід технічно ускладнений або заблокований
-
-**Чому так по-різному?**
-
-Згідно зі ст. 8 Закону "Про правовий режим воєнного стану", саме військові
-адміністрації мають визначати порядок використання захисних споруд — незалежно
-від форми власності. Однак для Києва цей базовий документ досі не затверджений
-або не оприлюднений, тому більшість укриттів фактично функціонують за
-неформальними правилами, встановленими власником.
-
-Подання укриття на облік також не є обов'язковим — воно ініціюється власником,
-органами місцевого самоврядування або ДСНС. Але щойно об'єкт потрапляє до
-реєстру, власника можна перевірити й оштрафувати за недопуск чи неналежне утримання.
+        <b>Що означають ці категорії?</b><br><br>
+        <b>Постійно відчинене для населення</b> — доступ вільний у будь-який час доби<br><br>
+        <b>Для населення у робочий час</b> — доступ обмежений годинами роботи закладу/установи<br><br>
+        <b>Відчинене для населення лише у разі оповіщення</b> — двері відкриваються тільки під час сигналу тривоги<br><br>
+        <b>Лише для працівників у робочий час</b> — доступ мають тільки співробітники об'єкта<br><br>
+        <b>Безперешкодний доступ не забезпечено</b> — вхід технічно ускладнений або заблокований
         """
     )
+
+info_card(
+    """
+    За законом, порядок використання укриттів (і державних, і приватних) визначають військові
+    адміністрації (стаття 8 Закону України "Про правовий режим воєнного стану"). повинні визначати
+    порядок використання споруд цивільного захисту.<br><br>
+    Зокрема, має бути забезпечено:
+    <ul>
+        <li>готовність до використання</li>
+        <li>цілодобовий та безперешкодний доступ до них під час повітряної тривоги;</li>
+        <li>відповідальність власника за утримання споруди у належному стані.</li>
+    </ul>
+    Однак у Києві документ досі не затверджено або не оприлюднено, тому більшість укриттів
+    функціонують за неформальними правилами, визначеними власником.<br><br>
+    Серед зареєстрованих укриттів проводять аудити, проте подання сховищ на облік не обов'язкове -
+    воно ініціюється власником, місцевим самоврядування, ДСНС тощо. Відповідно, є укриття, які ніяк
+    не можна проконтролювати.
+    """
+)
 
 chapter_break()
 
@@ -881,178 +851,90 @@ chapter_break()
 section_anchor("types")
 st.title("Типи укриттів")
 
-# ── 7a. Картки типів ────────────────────────────────────────────────────
+# ── 7a. Картки типів (карусель) ──────────────────────────────────────────
 SHELTER_TYPES = [
     {
-        "name": "Сховище",
+        "name": "Сховища",
         "photo": "assets/shelter_types/skhovyshche.jpg",
-        "description": "Найзахищеніший тип споруди — герметична, розрахована на пряме влучання та повний спектр вражаючих факторів.",
-        "protects_from": "Ударна хвиля (в т.ч. від зброї масового ураження), уламки, хімічні/радіоактивні/біологічні речовини, високі температури",
-        "duration": "Не менше 48 год",
+        "description": "Герметичні спеціалізовані споруди, що захищають від ударної хвилі, уламків, радіації, затоплення тощо - найнадійніші з усіх укриттів.",
+        "example": "Спеціалізовані глибокі підвали (традиційно - радянські) з герметичними дверима.",
     },
     {
-        "name": "ПРУ",
-        "photo": "assets/shelter_types/pru.jpg",
-        "description": "Протирадіаційне укриття — негерметична споруда, що захищає від радіації та частково від ударної хвилі, але не від хімічних чи біологічних агентів.",
-        "protects_from": "Іонізуюче випромінювання, ударна хвиля (менший тиск), уламки, високі температури. НЕ захищає від хімічних/біологічних агентів (негерметична споруда)",
-        "duration": "Не менше 48 год",
+        "name": "СПП із захисними властивостями протирадіаційного укриття",
+        "photo": "assets/shelter_types/spp_pru.jpg",
+        "description": "Споруди подвійного призначення (не спроєктовані як укриття, проте зі створеними умовами для тимчасового перебування), що можуть захистити від радіації, ударної хвилі, уламків.",
+        "example": "Виробничі приміщення, заклади культури, магазини.",
     },
     {
-        "name": "Споруда подвійного призначення",
-        "photo": "assets/shelter_types/spp.jpg",
-        "description": "У мирний час — паркінг, перехід чи станція метро, але за проєктом має захисні властивості сховища або ПРУ, залежно від категорії.",
-        "protects_from": "Те саме, що сховище або ПРУ — залежно від категорії проєктування",
-        "duration": "Не менше 48 год",
+        "name": "СПП із захисними властивостями сховища",
+        "photo": "assets/shelter_types/spp_skhovyshche.jpg",
+        "description": "Споруди подвійного призначення, що можуть бути використані як сховища.",
+        "example": "Виробничі приміщення, заклади культури, магазини.",
     },
     {
-        "name": "Найпростіше укриття",
+        "name": "Найпростіші укриття",
         "photo": "assets/shelter_types/naiprostishe.jpg",
-        "description": "Найпоширеніший тип у Києві — переобладнані підвали й техприміщення. Не розраховані на пряме влучання чи хімічну загрозу.",
-        "protects_from": "Лише непряма дія звичайних засобів ураження (уламки, вибухова хвиля здалеку). НЕ захищає від прямого влучання чи хімічних/радіоактивних факторів",
-        "duration": "Не менше 48 год",
+        "description": "Споруди, в яких можливе тимчасове перебування задля зниження комбінованого ураження від небезпечних чинників.",
+        "example": "Метро, тунелі, паркінги, підвали, цокольні поверхи.",
     },
     {
         "name": "Первинне (мобільне) укриття",
         "photo": "assets/shelter_types/pervynne.jpg",
-        "description": "Тимчасові споруди на відкритій місцевості — зупинки, павільйони в парках. Найслабший рівень захисту.",
-        "protects_from": "Лише непряма дія на відкритій місцевості (зупинки, парки) — найслабший рівень захисту",
-        "duration": "До 4 годин",
+        "description": "Тимчасові споруди, зведені для захисту від непрямої дії звичайних засобів ураження.",
+        "example": "Наземні бетонні споруди.",
     },
 ]
 
+CARD_WINDOW = 3
+if "shelter_type_start" not in st.session_state:
+    st.session_state.shelter_type_start = 0
 
-def render_type_card(t):
-    with st.container(border=True):
-        image_or_placeholder(t["photo"], height=160)
-        st.markdown(f"**{t['name']}**")
-        st.caption(t["description"])
-        st.markdown("<span style='font-size:12px;color:#666;'>🛡️ Від чого захищає</span>", unsafe_allow_html=True)
-        st.markdown(f"<span style='font-size:13px;'>{t['protects_from']}</span>", unsafe_allow_html=True)
-        st.markdown("<span style='font-size:12px;color:#666;'>⏱️ Тривалість перебування</span>", unsafe_allow_html=True)
-        st.markdown(f"<span style='font-size:13px;'>{t['duration']}</span>", unsafe_allow_html=True)
+nav_prev, nav_spacer, nav_next = st.columns([1, 10, 1])
+with nav_prev:
+    if st.button("◀", key="shelter_types_prev"):
+        st.session_state.shelter_type_start = max(0, st.session_state.shelter_type_start - 1)
+with nav_next:
+    if st.button("▶", key="shelter_types_next"):
+        st.session_state.shelter_type_start = min(
+            len(SHELTER_TYPES) - CARD_WINDOW, st.session_state.shelter_type_start + 1
+        )
 
+start = st.session_state.shelter_type_start
+visible_types = SHELTER_TYPES[start:start + CARD_WINDOW]
 
-row1 = st.columns(3)
-for col, t in zip(row1, SHELTER_TYPES[:3]):
+card_cols = st.columns(CARD_WINDOW)
+for col, t in zip(card_cols, visible_types):
     with col:
-        render_type_card(t)
-
-row2 = st.columns(3)
-for col, t in zip(row2, SHELTER_TYPES[3:] + [None]):
-    with col:
-        if t:
-            render_type_card(t)
+        with st.container(border=True, height=380):
+            image_or_placeholder(t["photo"], height=130)
+            st.markdown(f"**{t['name']}**")
+            st.caption(t["description"])
+            st.markdown(
+                f"<span style='font-size:12px;color:#666;'>Приклад — {t['example']}</span>",
+                unsafe_allow_html=True,
+            )
 
 st.divider()
 
-# ── 7b. Мапа з прикладами ───────────────────────────────────────────────
-st.subheader("Приклади на мапі")
-st.caption(
-    "Клікніть на точку, щоб побачити фото й опис конкретного укриття. "
-    "TODO(маша): замінити нижче на повний список 10 підготовлених прикладів + фото."
-)
+# ── 7b. Сюжет про метро ─────────────────────────────────────────────────
+col_metro_text, col_metro_img = st.columns([2, 1])
 
-# TODO(маша): замінити на реальні 10 прикладів з фото — schema нижче.
-SHELTER_EXAMPLES = [
-    {
-        "name": "Шухевича 4А",
-        "type": "Сховище",
-        "lat": 50.493648, "lon": 30.579104,
-        "description": "TODO: додати реальний опис укриття.",
-        "photo": "assets/shelter_examples/example_1.jpg",
-    },
-    {
-        "name": "Станція метро «Берестейська»",
-        "type": "Найпростіше укриття",
-        "lat": 50.458400, "lon": 30.419930,
-        "description": "TODO: додати реальний опис укриття.",
-        "photo": "assets/shelter_examples/example_2.jpg",
-    },
-]
+with col_metro_text:
+    insight_card(
+        """
+        <b>То чому ж метро переповнене?</b><br><br>
+        Деякі станції позначені як найпростіші укриття, деякі - як СПП із захисними властивостями
+        укриття. 36 з 50 станцій мапи позначені кілька разів - наприклад, кожен з виходів виділяють
+        як найпростіші укриття, а саму станцію - як споруду подвійного призначення.<br><br>
+        Це створює ілюзію місткості. Наприклад, станція "Берестейська" (див. зображення), враховуючи
+        повторні відмітки, теоретично розрахована на 1000+1000+1048 = 3048 осіб — цифру, яку складно
+        уявити.
+        """
+    )
 
-example_df = pd.DataFrame(SHELTER_EXAMPLES)
-
-fig_examples = px.choropleth_mapbox(
-    cap,
-    geojson=geojson,
-    locations="district",
-    featureidkey="properties.district",
-    color="population_by_capacity",
-    color_continuous_scale="RdYlGn_r",
-    color_continuous_midpoint=1,
-    range_color=[0, 3.5],
-    mapbox_style="carto-positron",
-    zoom=9.3,
-    center={"lat": 50.40, "lon": 30.57},
-    opacity=0.5,
-    hover_data={"district": False, "population_by_capacity": False},
-)
-fig_examples.update_traces(marker_line_width=0.5, marker_line_color="grey", showlegend=False)
-fig_examples.update_coloraxes(showscale=False)
-
-fig_examples.add_trace(go.Scattermapbox(
-    lat=example_df["lat"],
-    lon=example_df["lon"],
-    mode="markers",
-    marker=dict(size=16, color="#ff4b4b"),
-    text=example_df["name"],
-    customdata=example_df.index,
-    hovertemplate="%{text}<extra></extra>",
-    name="Приклади укриттів",
-))
-
-fig_examples.update_layout(
-    margin={"r": 0, "t": 0, "l": 0, "b": 0},
-    height=520,
-    showlegend=False,
-)
-
-
-@st.dialog("Приклад укриття")
-def show_shelter_dialog(example):
-    image_or_placeholder(example["photo"], height=220)
-    st.markdown(f"**{example['name']}**")
-    st.caption(example["type"])
-    st.write(example["description"])
-
-
-event = st.plotly_chart(
-    fig_examples,
-    width="stretch",
-    on_select="rerun",
-    selection_mode="points",
-    key="example_map_select",
-)
-
-if event and event.get("selection") and event["selection"].get("points"):
-    for point in event["selection"]["points"]:
-        if point.get("curve_number") == 1:
-            idx = point.get("point_index")
-            if idx is not None and idx < len(SHELTER_EXAMPLES):
-                show_shelter_dialog(SHELTER_EXAMPLES[idx])
-            break
-
-st.divider()
-
-# ── 7c. Сюжет про метро ─────────────────────────────────────────────────
-insight_card(
-    """
-    <b>То чому ж метро переповнене?</b><br><br>
-    Станції метро в Києві класифікуються по-різному й непослідовно: деякі, як "Позняки",
-    позначені як "найпростіше укриття", інші, як "Арсенальна" — як "споруда подвійного
-    призначення із захисними властивостями сховища". Більш того, 36 з 50 станцій на мапі
-    позначені кілька разів — кожен вихід окремо як найпростіше укриття, а сама станція
-    окремо як споруда подвійного призначення.<br><br>
-    Це створює ілюзію місткості. Наприклад, станція "Берестейська", враховуючи повторні
-    відмітки, теоретично розрахована на 1000+1000+1048 = 3048 осіб — цифру, яку складно
-    уявити реалістично, навіть з розрахунку 1 м² на особу.<br><br>
-    Метро офіційно належить до споруд подвійного призначення — тобто, за нормативами,
-    має відповідати вимогам, близьким до сховища. Але через некоректну категоризацію
-    на мапі воно нерідко фігурує як "найпростіше укриття" — той самий тип, що й звичайний
-    підвал. Це приклад того, як мапа, попри велику кількість точок, насправді ховає
-    реальну картину доступного захисту.
-    """
-)
+with col_metro_img:
+    # TODO: користувач додасть фото
+    image_or_placeholder("assets/metro_corridor.jpg", caption="Фото: © AMY / Wikimedia Commons, CC BY-SA 3.0")
 
 st.markdown(
     """
@@ -1066,7 +948,7 @@ st.markdown(
 st.divider()
 
 
-# ── Existing charts (вид споруди, тип локації) ──────────────────────────
+# ── 7c. Вид споруди / Тип локації (поруч) ────────────────────────────────
 def aggregate_kpi_row(heading, kyiv_df):
     if heading == "Вид споруди":
         order = ["Найпростіше укриття", "Сховище", "Інше"]
@@ -1104,124 +986,127 @@ def render_kpi_row(heading, kyiv_df):
             st.caption(f"{int(row['shelter_count']):,} укриттів")
 
 
-st.subheader("Вид споруди")
-shelter_kind_kyiv = agg["kyiv_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
-render_kpi_row("Вид споруди", shelter_kind_kyiv)
+col_kind, col_location = st.columns(2)
 
-shelter_kind_percent = st.toggle("Показати у %", key="toggle_shelter_kind_percent")
+with col_kind:
+    st.subheader("Вид споруди")
+    shelter_kind_kyiv = agg["kyiv_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
+    render_kpi_row("Вид споруди", shelter_kind_kyiv)
 
-shelter_kind_dist = agg["district_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
-shelter_kind_dist["values"] = shelter_kind_dist["percent"] if shelter_kind_percent else shelter_kind_dist["shelter_count"]
+    shelter_kind_percent = st.toggle("Показати у %", key="toggle_shelter_kind_percent")
 
-shelter_district_series = (
-    shelter_kind_dist[shelter_kind_dist["Тип"] == "Сховище"]
-    .set_index("district")["percent"]
-    .sort_values(ascending=True)
-)
+    shelter_kind_dist = agg["district_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
+    shelter_kind_dist["values"] = shelter_kind_dist["percent"] if shelter_kind_percent else shelter_kind_dist["shelter_count"]
 
-shelter_kind_dist["district"] = pd.Categorical(
-    shelter_kind_dist["district"],
-    categories=shelter_district_series.index,
-    ordered=True
-)
+    shelter_district_series = (
+        shelter_kind_dist[shelter_kind_dist["Тип"] == "Сховище"]
+        .set_index("district")["percent"]
+        .sort_values(ascending=True)
+    )
 
-shelter_kind_dist = shelter_kind_dist.sort_values("district")
+    shelter_kind_dist["district"] = pd.Categorical(
+        shelter_kind_dist["district"],
+        categories=shelter_district_series.index,
+        ordered=True
+    )
 
-shelter_kinds_categories = [
-    "Сховище",
-    "Споруда подвійного призначення із захисними властивостями сховища",
-    "Споруда подвійного призначення із захисними властивостями протирадіаційного укриття",
-    "Первинне (мобільне) укриття",
-    "Найпростіше укриття"
-]
+    shelter_kind_dist = shelter_kind_dist.sort_values("district")
 
-fig_shelter_kind = px.bar(
-    shelter_kind_dist,
-    x="values",
-    y="district",
-    color="Тип",
-    category_orders={
-        "Тип": shelter_kinds_categories
-    },
-    color_discrete_sequence=['#4C78A8', '#F58518', '#E45756', '#54A24B', '#72B7B2'],
-    orientation="h",
-    barmode="stack",
-    labels={"values": "% укриттів" if shelter_kind_percent else "Кількість", "district": "Район"},
-    height=440,
-)
-fig_shelter_kind.update_layout(
-    legend=dict(orientation="h", y=-0.25),
-    margin=dict(l=0, r=20, t=10, b=70)
-)
+    shelter_kinds_categories = [
+        "Сховище",
+        "Споруда подвійного призначення із захисними властивостями сховища",
+        "Споруда подвійного призначення із захисними властивостями протирадіаційного укриття",
+        "Первинне (мобільне) укриття",
+        "Найпростіше укриття"
+    ]
 
-fig_shelter_kind.update_xaxes(
-    range=[0, 100] if shelter_kind_percent else [0,
-                                                 shelter_kind_dist.groupby("district")["values"].sum().max() * 1.05]
-)
-st.plotly_chart(fig_shelter_kind, width="stretch")
+    fig_shelter_kind = px.bar(
+        shelter_kind_dist,
+        x="values",
+        y="district",
+        color="Тип",
+        category_orders={
+            "Тип": shelter_kinds_categories
+        },
+        color_discrete_sequence=['#4C78A8', '#F58518', '#E45756', '#54A24B', '#72B7B2'],
+        orientation="h",
+        barmode="stack",
+        labels={"values": "% укриттів" if shelter_kind_percent else "Кількість", "district": "Район"},
+        height=440,
+    )
+    fig_shelter_kind.update_layout(
+        legend=dict(orientation="h", y=-0.3),
+        margin=dict(l=0, r=20, t=10, b=90)
+    )
 
-insight_card(
-    """
-    Абсолютна більшість об'єктів — це найпростіші укриття, тобто пристосовані підвали,
-    що не забезпечують повноцінних захисних властивостей. Частка повноцінних сховищ у Києві
-    становить лише близько 2%.
-    """
-)
+    fig_shelter_kind.update_xaxes(
+        range=[0, 100] if shelter_kind_percent else [0,
+                                                     shelter_kind_dist.groupby("district")["values"].sum().max() * 1.05]
+    )
+    st.plotly_chart(fig_shelter_kind, use_container_width=True)
 
-st.divider()
-st.subheader("Тип локації")
-location_type_kyiv = agg["kyiv_location_types"].rename(columns={"location_type": "Тип"})
-render_kpi_row("Тип локації", location_type_kyiv)
+    insight_card(
+        """
+        Абсолютна більшість об'єктів — це найпростіші укриття, тобто пристосовані підвали,
+        що не забезпечують повноцінних захисних властивостей. Частка повноцінних сховищ у Києві
+        становить лише близько 2%.
+        """
+    )
 
-location_type_percent = st.toggle("Показати у %", key="toggle_location_type_percent")
+with col_location:
+    st.subheader("Тип локації")
+    location_type_kyiv = agg["kyiv_location_types"].rename(columns={"location_type": "Тип"})
+    render_kpi_row("Тип локації", location_type_kyiv)
 
-location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
-location_type_dist["values"] = location_type_dist["percent"] if location_type_percent else location_type_dist["shelter_count"]
-location_sorting_series = (
-    location_type_dist[location_type_dist["Тип"] == "Заглиблена"]
-    .set_index("district")["percent"]
-    .sort_values(ascending=True)
-)
+    location_type_percent = st.toggle("Показати у %", key="toggle_location_type_percent")
 
-location_type_dist["district"] = pd.Categorical(
-    location_type_dist["district"],
-    categories=location_sorting_series.index,
-    ordered=True
-)
+    location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
+    location_type_dist["values"] = location_type_dist["percent"] if location_type_percent else location_type_dist["shelter_count"]
+    location_sorting_series = (
+        location_type_dist[location_type_dist["Тип"] == "Заглиблена"]
+        .set_index("district")["percent"]
+        .sort_values(ascending=True)
+    )
 
-location_type_dist = location_type_dist.sort_values("district")
+    location_type_dist["district"] = pd.Categorical(
+        location_type_dist["district"],
+        categories=location_sorting_series.index,
+        ordered=True
+    )
 
-location_type_categories = [
-    "Заглиблена",
-    "Надземна",
-    "Напівзаглиблена"
-]
+    location_type_dist = location_type_dist.sort_values("district")
 
-fig_location_type = px.bar(
-    location_type_dist,
-    x="values",
-    y="district",
-    color="Тип",
-    category_orders={
-        "Тип": location_type_categories
-    },
-    color_discrete_sequence=["#fa6e6e", "#ddcc77", "#88ccee"],
-    orientation="h",
-    barmode="stack",
-    labels={"values": "% укриттів" if location_type_percent else "Кількість", "district": "Район"},
-    height=440,
-)
-fig_location_type.update_layout(
-    legend=dict(orientation="h", y=-0.25),
-    margin=dict(l=0, r=0, t=10, b=70)
-)
-st.plotly_chart(fig_location_type, width="stretch")
+    location_type_categories = [
+        "Заглиблена",
+        "Надземна",
+        "Напівзаглиблена"
+    ]
 
-insight_card(
-    """
-    Майже всі укриття Києва є заглибленими, що чудовим сигналом.
-    """
-)
+    fig_location_type = px.bar(
+        location_type_dist,
+        x="values",
+        y="district",
+        color="Тип",
+        category_orders={
+            "Тип": location_type_categories
+        },
+        color_discrete_sequence=["#fa6e6e", "#ddcc77", "#88ccee"],
+        orientation="h",
+        barmode="stack",
+        labels={"values": "% укриттів" if location_type_percent else "Кількість", "district": "Район"},
+        height=440,
+    )
+    fig_location_type.update_layout(
+        legend=dict(orientation="h", y=-0.3),
+        margin=dict(l=0, r=0, t=10, b=90)
+    )
+    st.plotly_chart(fig_location_type, use_container_width=True)
+
+    insight_card(
+        """
+        Майже всі укриття Києва є заглибленими, що чудовим сигналом.
+        """
+    )
 
 chapter_break()
 
@@ -1233,28 +1118,20 @@ st.title("Що з цим робити")
 
 st.markdown(
     """
-### Що далі
+Наше дослідження показало, що наявні в інтернеті дані про укриття Києва є значною мірою "black box":
+загальна статистика, вимоги до сховищ, класифікація за категоріями та частота оновлення інформації
+не є прозорими для містян. Стан багатьох укриттів незадовільний, а їх місткість - переоцінена.
 
-Наше дослідження показало: наявні дані про укриття Києва значною мірою є "чорною
-скринькою" — загальна статистика, вимоги до сховищ, класифікація та частота
-оновлення інформації не є прозорими для містян. Стан багатьох укриттів
-незадовільний, а їх заявлена місткість — переоцінена.
+Ці бар'єри для користування сховищами наштовхують на роздуми про культуру спускання в укриття в Києві
+загалом. Можливо, кияни мало ходять в укриття, бо не мають достатньо актуальної інформації, а нових
+даних, натомість, немає, бо укриттями мало користуються? Чому мало людей спускаються регулярно, а в
+масовані обстріли ми маємо хаос? Проблема в забезпеченні укриттями чи в тому, як про них комунікують?
+Чому не всі укриття є на мапі? Як забезпечити оперативний обмін інформацією між громадянами та владою?
 
 Ми бачимо рішення у:
 
-1. Підвищенні обізнаності громадян про реальну ситуацію з укриттями
-2. Діалозі з органами місцевого самоврядування щодо регулярних аудитів,
-   облаштування сховищ і перегляду норм на місткість
-3. Створенні діджитал-платформи з актуальною інформацією від самих користувачів —
-   аналог Google Maps, де кияни могли б лишати відгуки з фото та будувати маршрути
-   до найближчого укриття
-
-### Відкрите питання
-
-Як наявність (чи відсутність) даних пов'язана з культурою спускання в укриття?
-Чому мало людей ходять в укриття регулярно, а під час масованих обстрілів ми
-маємо хаос? Проблема в забезпеченні укриттями чи в тому, як про них комунікують?
-Чому не всі укриття є на мапі? Як забезпечити оперативний і правдивий обмін
-інформацією між громадянами та владою?
+- Підвищенні обізнаності громадян про реальну ситуацію з укриттями
+- Діалозі з органами місцевого самоврядування щодо регулярних аудитів, облаштування сховищ і перегляду норм на місткість
+- Створенні діджитал-платформи з актуальною інформацією від самих користувачів — аналог Google Maps, де кияни могли б лишати відгуки з фото та будувати маршрути до найближчого укриття
     """
 )
