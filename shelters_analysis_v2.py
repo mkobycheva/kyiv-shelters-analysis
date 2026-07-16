@@ -675,41 +675,81 @@ st.title("Типи укриттів")
 SHELTER_TYPES = [
     {
         "name": "Сховища",
-        "photo": "assets/shelter_types/skhovyshche.jpg",
+        "photos": [
+            "assets/shelter_types/skhovyshche.jpg",
+            "assets/shelter_types/skhovyshche_2.jpg",
+            "assets/shelter_types/skhovyshche_3.jpg",
+        ],
         "description": "Герметичні спеціалізовані споруди, що захищають від ударної хвилі, уламків, радіації, затоплення тощо - найнадійніші з усіх укриттів.",
         "example": "Спеціалізовані глибокі підвали (традиційно - радянські) з герметичними дверима.",
     },
     {
         "name": "СПП із захисними властивостями протирадіаційного укриття",
-        "photo": "assets/shelter_types/spp_pru.jpg",
+        "photos": [
+            "assets/shelter_types/spp_pru.jpg",
+            "assets/shelter_types/spp_pru_2.jpg",
+            "assets/shelter_types/spp_pru_3.jpg",
+        ],
         "description": "Споруди подвійного призначення (не спроєктовані як укриття, проте зі створеними умовами для тимчасового перебування), що можуть захистити від радіації, ударної хвилі, уламків.",
         "example": "Виробничі приміщення, заклади культури, магазини.",
     },
     {
         "name": "СПП із захисними властивостями сховища",
-        "photo": "assets/shelter_types/spp_skhovyshche.jpg",
+        "photos": [
+            "assets/shelter_types/spp_skhovyshche.jpg",
+            "assets/shelter_types/spp_skhovyshche_2.jpg",
+            "assets/shelter_types/spp_skhovyshche_3.jpg",
+        ],
         "description": "Споруди подвійного призначення, що можуть бути використані як сховища.",
         "example": "Виробничі приміщення, заклади культури, магазини.",
     },
     {
         "name": "Найпростіші укриття",
-        "photo": "assets/shelter_types/naiprostishe.jpg",
+        "photos": [
+            "assets/shelter_types/naiprostishe.jpg",
+            "assets/shelter_types/naiprostishe_2.jpg",
+            "assets/shelter_types/naiprostishe_3.jpg",
+        ],
         "description": "Споруди, в яких можливе тимчасове перебування задля зниження комбінованого ураження від небезпечних чинників.",
         "example": "Метро, тунелі, паркінги, підвали, цокольні поверхи.",
     },
     {
         "name": "Первинне (мобільне) укриття",
-        "photo": "assets/shelter_types/pervynne.jpg",
+        "photos": [
+            "assets/shelter_types/pervynne.jpg",
+            "assets/shelter_types/pervynne_2.jpg",
+            "assets/shelter_types/pervynne_3.jpg",
+        ],
         "description": "Тимчасові споруди, зведені для захисту від непрямої дії звичайних засобів ураження.",
         "example": "Наземні бетонні споруди.",
     },
 ]
 
-def render_type_card(t):
+
+def render_type_card(t, card_idx):
+    photos = t["photos"]
+    state_key = f"type_photo_idx_{card_idx}"
+    if state_key not in st.session_state:
+        st.session_state[state_key] = 0
+    photo_idx = st.session_state[state_key] % len(photos)
+
     with st.container(border=True):
         col_img, col_text = st.columns([2, 3])
         with col_img:
-            image_or_placeholder(t["photo"], height=100)
+            image_or_placeholder(photos[photo_idx], height=100)
+            if len(photos) > 1:
+                nav_prev, nav_label, nav_next = st.columns([1, 2, 1])
+                with nav_prev:
+                    if st.button("◀", key=f"{state_key}_prev"):
+                        st.session_state[state_key] = (photo_idx - 1) % len(photos)
+                with nav_label:
+                    st.markdown(
+                        f"<div style='text-align:center; font-size:11px; color:#999;'>{photo_idx + 1}/{len(photos)}</div>",
+                        unsafe_allow_html=True,
+                    )
+                with nav_next:
+                    if st.button("▶", key=f"{state_key}_next"):
+                        st.session_state[state_key] = (photo_idx + 1) % len(photos)
         with col_text:
             st.markdown(f"**{t['name']}**")
             st.caption(t["description"])
@@ -719,8 +759,8 @@ def render_type_card(t):
             )
 
 
-for t in SHELTER_TYPES:
-    render_type_card(t)
+for card_idx, t in enumerate(SHELTER_TYPES):
+    render_type_card(t, card_idx)
 
 st.divider()
 
