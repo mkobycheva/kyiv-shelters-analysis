@@ -408,13 +408,13 @@ kyiv_area_per_person = kyiv["total_area"] / kyiv["population"]
 # ── Sidebar: table of contents (anchor links, page scrolls in one piece) ─────
 SECTIONS = [
     ("intro",    "Вступ"),
-    ("about",    "Про дослідження"),
+    # ("about",    "Про дослідження"),
     ("capacity", "Місткість"),
     ("area",     "Площа на людину"),
+    ("types", "Типи укриттів"),
     ("systems",  "Стан систем"),
     ("access",   "Доступність і відкритість"),
-    ("types",    "Типи укриттів"),
-    ("next",     "Що далі"),
+    ("next",     "Що можна зробити?"),
 ]
 
 st.sidebar.markdown("**Розділ**")
@@ -433,7 +433,7 @@ st.sidebar.markdown(
 section_anchor("intro")
 st.title("Чи вміщається Київ в укриття?")
 
-col_intro_text, col_intro_img = st.columns([3, 2])
+col_intro_text, col_intro_img = st.columns([1, 2])
 
 with col_intro_text:
     st.markdown(
@@ -453,8 +453,6 @@ st.markdown(
 Ця сторінка - спроба дати цілісний погляд на проблему укриттів Києва. Наші візуалізації відображають стан систем в укриттях, їх типи та доступність по районах міста. Також ми наводимо приклади, коли інформація з мап може вводити в оману.
         """
     )
-chapter_break()
-
 # ══════════════════════════════════════════════════════════════════════════════
 # 2. ПРО ДОСЛІДЖЕННЯ
 # ══════════════════════════════════════════════════════════════════════════════
@@ -491,13 +489,13 @@ with st.expander("Обмеження, джерела та методологія
         """
     )
 
-chapter_break()
+# chapter_break()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 3. МІСТКІСТЬ
 # ══════════════════════════════════════════════════════════════════════════════
 section_anchor("capacity")
-st.subheader("Місткість укриттів")
+st.title("Місткість укриттів")
 
 c1, c2, c3 = st.columns(3)
 c1.metric("Кількість укриттів, шт.", f"{int(kyiv['shelter_count']):,}")
@@ -595,7 +593,7 @@ insight_card(
     """
 )
 
-chapter_break()
+# chapter_break()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 4. ПЛОЩА НА ЛЮДИНУ
@@ -603,7 +601,7 @@ chapter_break()
 section_anchor("area")
 st.subheader("Площа на людину")
 
-col_area_chart, col_area_text = st.columns([2, 1])
+col_area_chart, col_area_text = st.columns([3, 1])
 
 with col_area_chart:
     bar_df = cap[["district", "area_per_person"]].sort_values("area_per_person", ascending=True)
@@ -644,208 +642,14 @@ with col_area_text:
         
         
         Крім того, що цю вимогу проходить половина районів, вона розрахована на **посидіти в укритті**,
-        а реальність нічних масованих тривог — це **переночувати**. Щоб лягти, людині треба ~1,8 м²
+        а реальність нічних масованих тривог — це **переночувати**. 
+        
+        Щоб лягти, людині треба ~1,8 м²
         (односпальне ліжко), що втричі більше за прогнозований простір.
         """
     )
 
-chapter_break()
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 5. СТАН СИСТЕМ
-# ══════════════════════════════════════════════════════════════════════════════
-section_anchor("systems")
-st.subheader("Стан інженерних систем")
-
-status = agg["df_total_status"]
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Опалення", f"{status['Опалення']}%")
-c2.metric("Електропостачання", f"{status['Електропостачання']}%")
-c3.metric("Інтернет", f"{status['Інтернет']}%")
-c4.metric("Водопостачання", f"{status['Водопостачання']}%")
-st.caption("% укриттів з наявною/справною системою по Києву")
-
-st.divider()
-
-st.markdown(
-    """
-    **Найпростіші укриття** мають бути забезпечені електроживленням, освітленням, системами водопроводу
-    та каналізації, засобами зв'язку і оповіщення (телефоном, радіоприймачем, інтернетом, рекомендовано
-    встановлення Wi-Fi) (ДБН В.2.2-5:2023). До опалення вимог не знайшлось. Крім того, у серпні 2025 року
-    наказ МВС №579 змінив вимоги до водопостачання, каналізації, резервного живлення, аптечок і зв'язку
-    **з обов'язкових на рекомендаційні**.
-    
-    
-    Для **ПРУ, СПП та сховищ** вимог більше: власне джерело електрики, очищення повітря, запас питної води
-    2-3 л/добу на особу і зв'язок, що не переривається - і все це має **безперервно функціонувати 48 год**.
-    """
-)
-
-st.divider()
-
-water   = agg["water_report"][["Район міста", "Наявна/Справна (%)"]].rename(columns={"Наявна/Справна (%)": "Вода"})
-heating = agg["heating_report"][["Район міста", "Наявна/Справна (%)"]].rename(columns={"Наявна/Справна (%)": "Опалення"})
-power   = agg["power_report"][["Район міста", "Наявна/Справна (%)"]].rename(columns={"Наявна/Справна (%)": "Електрика"})
-
-comm_col = "Є інтернет (Wi-Fi/Дротовий) (%)" if "Є інтернет (Wi-Fi/Дротовий) (%)" in agg["comm_report"].columns else "Є інтернет (%)"
-comm = agg["comm_report"][["Район міста", comm_col]].rename(columns={comm_col: "Інтернет"})
-
-heatmap_df = heating.merge(power, on="Район міста").merge(comm, on="Район міста").merge(water, on="Район міста")
-heatmap_df = heatmap_df.sort_values("Опалення", ascending=False)
-
-system_order = ["Опалення", "Електрика", "Інтернет", "Вода"]
-z = heatmap_df[system_order].values
-y = heatmap_df["Район міста"].tolist()
-x = system_order
-
-fig_heat = go.Figure(go.Heatmap(
-    z=z, x=x, y=y,
-    colorscale="RdYlGn",
-    zmin=0, zmax=100,
-    text=[[f"{v:.1f}%" for v in row] for row in z],
-    texttemplate="%{text}",
-    hovertemplate="%{y} — %{x}: %{z:.1f}%<extra></extra>",
-    colorbar=dict(title="%"),
-))
-fig_heat.update_layout(
-    height=420,
-    margin=dict(l=0, r=0, t=10, b=0),
-    xaxis=dict(side="top"),
-)
-st.plotly_chart(fig_heat, use_container_width=True)
-
-insight_card(
-    """
-    Електрикою забезпечені майже всі укриття, водою - більше половини, а от опалення і інтернет
-    наявні лише в третині укриттів Києва. Враховуючи низькі температури минулої зими, це фактично
-    означає, що 2/3 укриттів непридатні для тривалого перебування в холодну пору року.
-    """
-)
-
-chapter_break()
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 6. ДОСТУПНІСТЬ І ВІДКРИТІСТЬ
-# ══════════════════════════════════════════════════════════════════════════════
-section_anchor("access")
-st.title("Доступність і відкритість укриттів")
-
-st.subheader("Доступність для маломобільних груп населення (МГН)")
-
-total_mgn = agg["df_total_mgn"]
-st.metric("Доступних укриттів у Києві", f"{total_mgn}%")
-
-mgn = agg["mgn_report"].sort_values("Доступно для МГН (%)", ascending=False)
-fig_mgn = px.bar(
-    mgn,
-    x="Доступно для МГН (%)",
-    y="Район міста",
-    orientation="h",
-    color="Доступно для МГН (%)",
-    color_continuous_scale="Reds_r",
-    range_color=[0, 100],
-    text="Доступно для МГН (%)",
-    labels={"Доступно для МГН (%)": "%", "Район міста": ""},
-    height=380,
-)
-fig_mgn.update_traces(texttemplate="%{text:.1f}%", textposition="outside")
-fig_mgn.update_layout(
-    coloraxis_showscale=False,
-    margin=dict(l=0, r=80, t=10, b=0),
-)
-st.plotly_chart(fig_mgn, use_container_width=True)
-
-insight_card(
-    """
-    Лише 13,4% київських укриттів доступні для маломобільних груп населення. Розрив між районами
-     вражає: від більше третини у Подільському до ~3% у Шевченківському. Для людей з інвалідністю,
-     літніх людей та батьків із дитячими візками більшість позначок на карті фактично не є реальною можливістю убезпечитися.
-    """
-)
-
-st.divider()
-
-st.subheader("Відкритість укриттів")
-
-oa_percent = st.toggle("Показати у %", key="toggle_oa_percent")
-
-dist_oa = agg["district_open_access"]
-dist_oa["values"] = dist_oa["percent"] if oa_percent else dist_oa["shelter_count"]
-
-oa_sorting_series = (
-    dist_oa[dist_oa["open_access"] == "Постійно відчинене для населення"]
-    .set_index("district")["percent"]
-    .sort_values(ascending=True)
-)
-
-dist_oa["district"] = pd.Categorical(
-    dist_oa["district"],
-    categories=oa_sorting_series.index,
-    ordered=True
-)
-
-dist_oa = dist_oa.sort_values("district")
-
-oa_categories = [
-    "Постійно відчинене для населення",
-    "Для населення у робочий час",
-    "Відчинене для населення лише у разі оповіщення",
-    "Лише для працівників у робочий час",
-    "Безперешкодний доступ не забезпечено"
-]
-
-fig_oa_bar = px.bar(
-    dist_oa,
-    x="values",
-    y="district",
-    color="open_access",
-    category_orders={
-        "open_access": oa_categories
-    },
-    orientation="h",
-    barmode="stack",
-    labels={"values": "% укриттів" if oa_percent else "Кількість", "district": "", "open_access": "Доступ"},
-    height=400,
-)
-fig_oa_bar.update_layout(
-    legend=dict(orientation="h", y=-0.3, title=""),
-    margin=dict(l=0, r=0, t=10, b=60),
-)
-st.plotly_chart(fig_oa_bar, use_container_width=True)
-
-with st.expander("Обмеження, джерела та методологія"):
-    st.markdown(
-        """
-        #### Що означають ці категорії?
-        * **Постійно відчинене для населення** - доступ вільний у будь-який час доби
-        * **Для населення у робочий час** - доступ обмежений годинами роботи закладу/установи
-        * **Відчинене для населення лише у разі оповіщення** - двері відкриваються тільки під час сигналу тривоги
-        * **Лише для працівників у робочий час** - доступ мають тільки співробітники об'єкта
-        * **Безперешкодний доступ не забезпечено** - вхід технічно ускладнений або заблокований
-        """
-    )
-
-
-info_card(
-    """
-    За законом, порядок використання укриттів (і державних, і приватних) визначають військові
-    адміністрації (стаття 8 Закону України "Про правовий режим воєнного стану"). повинні визначати
-    порядок використання споруд цивільного захисту.<br><br>
-    Зокрема, має бути забезпечено:
-    <ul>
-        готовність до використання
-        цілодобовий та безперешкодний доступ до них під час повітряної тривоги
-        відповідальність власника за утримання споруди у належному стані
-    </ul>
-    Однак у Києві документ досі не затверджено або не оприлюднено, тому більшість укриттів
-    функціонують за неформальними правилами, визначеними власником.<br><br>
-    Серед зареєстрованих укриттів проводять аудити, проте подання сховищ на облік не обов'язкове -
-    воно ініціюється власником, місцевим самоврядування, ДСНС тощо. Відповідно, є укриття, які ніяк
-    не можна проконтролювати.
-    """
-)
-
-chapter_break()
+# chapter_break()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 7. ТИПИ УКРИТТІВ
@@ -980,120 +784,117 @@ def render_kpi_row(heading, kyiv_df):
             st.caption(f"{int(row['shelter_count']):,} укриттів")
 
 
-col_kind, col_location = st.columns(2)
+st.subheader("Вид споруди")
+shelter_kind_kyiv = agg["kyiv_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
+render_kpi_row("Вид споруди", shelter_kind_kyiv)
 
-with col_kind:
-    st.subheader("Вид споруди")
-    shelter_kind_kyiv = agg["kyiv_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
-    render_kpi_row("Вид споруди", shelter_kind_kyiv)
+shelter_kind_percent = st.toggle("Показати у %", key="toggle_shelter_kind_percent")
 
-    shelter_kind_percent = st.toggle("Показати у %", key="toggle_shelter_kind_percent")
+shelter_kind_dist = agg["district_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
+shelter_kind_dist["values"] = shelter_kind_dist["percent"] if shelter_kind_percent else shelter_kind_dist["shelter_count"]
 
-    shelter_kind_dist = agg["district_shelter_kinds"].rename(columns={"shelter_kind": "Тип"})
-    shelter_kind_dist["values"] = shelter_kind_dist["percent"] if shelter_kind_percent else shelter_kind_dist["shelter_count"]
+shelter_district_series = (
+    shelter_kind_dist[shelter_kind_dist["Тип"] == "Сховище"]
+    .set_index("district")["percent"]
+    .sort_values(ascending=True)
+)
 
-    shelter_district_series = (
-        shelter_kind_dist[shelter_kind_dist["Тип"] == "Сховище"]
-        .set_index("district")["percent"]
-        .sort_values(ascending=True)
-    )
+shelter_kind_dist["district"] = pd.Categorical(
+    shelter_kind_dist["district"],
+    categories=shelter_district_series.index,
+    ordered=True
+)
 
-    shelter_kind_dist["district"] = pd.Categorical(
-        shelter_kind_dist["district"],
-        categories=shelter_district_series.index,
-        ordered=True
-    )
+shelter_kind_dist = shelter_kind_dist.sort_values("district")
 
-    shelter_kind_dist = shelter_kind_dist.sort_values("district")
+shelter_kinds_categories = [
+    "Сховище",
+    "Споруда подвійного призначення із захисними властивостями сховища",
+    "Споруда подвійного призначення із захисними властивостями протирадіаційного укриття",
+    "Первинне (мобільне) укриття",
+    "Найпростіше укриття"
+]
 
-    shelter_kinds_categories = [
-        "Сховище",
-        "Споруда подвійного призначення із захисними властивостями сховища",
-        "Споруда подвійного призначення із захисними властивостями протирадіаційного укриття",
-        "Первинне (мобільне) укриття",
-        "Найпростіше укриття"
-    ]
+fig_shelter_kind = px.bar(
+    shelter_kind_dist,
+    x="values",
+    y="district",
+    color="Тип",
+    category_orders={
+        "Тип": shelter_kinds_categories
+    },
+    color_discrete_sequence=['#4C78A8', '#F58518', '#E45756', '#54A24B', '#72B7B2'],
+    orientation="h",
+    barmode="stack",
+    labels={"values": "% укриттів" if shelter_kind_percent else "Кількість", "district": "Район"},
+    height=440,
+)
+fig_shelter_kind.update_layout(
+    legend=dict(orientation="h", y=-0.3),
+    margin=dict(l=0, r=20, t=10, b=90)
+)
 
-    fig_shelter_kind = px.bar(
-        shelter_kind_dist,
-        x="values",
-        y="district",
-        color="Тип",
-        category_orders={
-            "Тип": shelter_kinds_categories
-        },
-        color_discrete_sequence=['#4C78A8', '#F58518', '#E45756', '#54A24B', '#72B7B2'],
-        orientation="h",
-        barmode="stack",
-        labels={"values": "% укриттів" if shelter_kind_percent else "Кількість", "district": "Район"},
-        height=440,
-    )
-    fig_shelter_kind.update_layout(
-        legend=dict(orientation="h", y=-0.3),
-        margin=dict(l=0, r=20, t=10, b=90)
-    )
-
-    fig_shelter_kind.update_xaxes(
-        range=[0, 100] if shelter_kind_percent else [0,
-                                                     shelter_kind_dist.groupby("district")["values"].sum().max() * 1.05]
-    )
-    st.plotly_chart(fig_shelter_kind, use_container_width=True)
+fig_shelter_kind.update_xaxes(
+    range=[0, 100] if shelter_kind_percent else [0,
+                                                 shelter_kind_dist.groupby("district")["values"].sum().max() * 1.05]
+)
+st.plotly_chart(fig_shelter_kind, use_container_width=True)
 
 
-with col_location:
-    st.subheader("Тип локації")
-    location_type_kyiv = agg["kyiv_location_types"].rename(columns={"location_type": "Тип"})
-    render_kpi_row("Тип локації", location_type_kyiv)
-
-    location_type_percent = st.toggle("Показати у %", key="toggle_location_type_percent")
-
-    location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
-    location_type_dist["values"] = location_type_dist["percent"] if location_type_percent else location_type_dist["shelter_count"]
-    location_sorting_series = (
-        location_type_dist[location_type_dist["Тип"] == "Заглиблена"]
-        .set_index("district")["percent"]
-        .sort_values(ascending=True)
-    )
-
-    location_type_dist["district"] = pd.Categorical(
-        location_type_dist["district"],
-        categories=location_sorting_series.index,
-        ordered=True
-    )
-
-    location_type_dist = location_type_dist.sort_values("district")
-
-    location_type_categories = [
-        "Заглиблена",
-        "Надземна",
-        "Напівзаглиблена"
-    ]
-
-    fig_location_type = px.bar(
-        location_type_dist,
-        x="values",
-        y="district",
-        color="Тип",
-        category_orders={
-            "Тип": location_type_categories
-        },
-        color_discrete_sequence=["#fa6e6e", "#ddcc77", "#88ccee"],
-        orientation="h",
-        barmode="stack",
-        labels={"values": "% укриттів" if location_type_percent else "Кількість", "district": "Район"},
-        height=440,
-    )
-    fig_location_type.update_layout(
-        legend=dict(orientation="h", y=-0.3),
-        margin=dict(l=0, r=0, t=10, b=90)
-    )
-    st.plotly_chart(fig_location_type, use_container_width=True)
-
-    insight_card(
-        """
-        Майже всі укриття Києва є заглибленими, що чудовим сигналом.
-        """
-    )
+# with col_location:
+#     st.subheader("Тип локації")
+#     location_type_kyiv = agg["kyiv_location_types"].rename(columns={"location_type": "Тип"})
+#     render_kpi_row("Тип локації", location_type_kyiv)
+#
+#     location_type_percent = st.toggle("Показати у %", key="toggle_location_type_percent")
+#
+#     location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
+#     location_type_dist["values"] = location_type_dist["percent"] if location_type_percent else location_type_dist["shelter_count"]
+#     location_sorting_series = (
+#         location_type_dist[location_type_dist["Тип"] == "Заглиблена"]
+#         .set_index("district")["percent"]
+#         .sort_values(ascending=True)
+#     )
+#
+#     location_type_dist["district"] = pd.Categorical(
+#         location_type_dist["district"],
+#         categories=location_sorting_series.index,
+#         ordered=True
+#     )
+#
+#     location_type_dist = location_type_dist.sort_values("district")
+#
+#     location_type_categories = [
+#         "Заглиблена",
+#         "Надземна",
+#         "Напівзаглиблена"
+#     ]
+#
+#     fig_location_type = px.bar(
+#         location_type_dist,
+#         x="values",
+#         y="district",
+#         color="Тип",
+#         category_orders={
+#             "Тип": location_type_categories
+#         },
+#         color_discrete_sequence=["#fa6e6e", "#ddcc77", "#88ccee"],
+#         orientation="h",
+#         barmode="stack",
+#         labels={"values": "% укриттів" if location_type_percent else "Кількість", "district": "Район"},
+#         height=440,
+#     )
+#     fig_location_type.update_layout(
+#         legend=dict(orientation="h", y=-0.3),
+#         margin=dict(l=0, r=0, t=10, b=90)
+#     )
+#     st.plotly_chart(fig_location_type, use_container_width=True)
+#
+#     insight_card(
+#         """
+#         Майже всі укриття Києва є заглибленими, що чудовим сигналом.
+#         """
+#     )
 
 insight_card(
     """
@@ -1103,7 +904,201 @@ insight_card(
     """
 )
 
+# chapter_break()
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 5. СТАН СИСТЕМ
+# ══════════════════════════════════════════════════════════════════════════════
+section_anchor("systems")
+st.title("Стан інженерних систем")
+
+status = agg["df_total_status"]
+c1, c2, c3, c4 = st.columns(4)
+c1.metric("Опалення", f"{status['Опалення']}%")
+c2.metric("Електропостачання", f"{status['Електропостачання']}%")
+c3.metric("Інтернет", f"{status['Інтернет']}%")
+c4.metric("Водопостачання", f"{status['Водопостачання']}%")
+st.caption("% укриттів з наявною/справною системою по Києву")
+
+st.divider()
+
+st.markdown(
+    """
+    **Найпростіші укриття** мають бути забезпечені електроживленням, освітленням, системами водопроводу
+    та каналізації, засобами зв'язку і оповіщення (телефоном, радіоприймачем, інтернетом, рекомендовано
+    встановлення Wi-Fi) (ДБН В.2.2-5:2023). До опалення вимог не знайшлось. Крім того, у серпні 2025 року
+    наказ МВС №579 змінив вимоги до водопостачання, каналізації, резервного живлення, аптечок і зв'язку
+    **з обов'язкових на рекомендаційні**.
+    
+    
+    Для **ПРУ, СПП та сховищ** вимог більше: власне джерело електрики, очищення повітря, запас питної води
+    2-3 л/добу на особу і зв'язок, що не переривається - і все це має **безперервно функціонувати 48 год**.
+    """
+)
+
+# st.divider()
+
+water   = agg["water_report"][["Район міста", "Наявна/Справна (%)"]].rename(columns={"Наявна/Справна (%)": "Вода"})
+heating = agg["heating_report"][["Район міста", "Наявна/Справна (%)"]].rename(columns={"Наявна/Справна (%)": "Опалення"})
+power   = agg["power_report"][["Район міста", "Наявна/Справна (%)"]].rename(columns={"Наявна/Справна (%)": "Електрика"})
+
+comm_col = "Є інтернет (Wi-Fi/Дротовий) (%)" if "Є інтернет (Wi-Fi/Дротовий) (%)" in agg["comm_report"].columns else "Є інтернет (%)"
+comm = agg["comm_report"][["Район міста", comm_col]].rename(columns={comm_col: "Інтернет"})
+
+heatmap_df = heating.merge(power, on="Район міста").merge(comm, on="Район міста").merge(water, on="Район міста")
+heatmap_df = heatmap_df.sort_values("Опалення", ascending=False)
+
+system_order = ["Опалення", "Електрика", "Інтернет", "Вода"]
+z = heatmap_df[system_order].values
+y = heatmap_df["Район міста"].tolist()
+x = system_order
+
+fig_heat = go.Figure(go.Heatmap(
+    z=z, x=x, y=y,
+    colorscale="RdYlGn",
+    zmin=0, zmax=100,
+    text=[[f"{v:.1f}%" for v in row] for row in z],
+    texttemplate="%{text}",
+    hovertemplate="%{y} — %{x}: %{z:.1f}%<extra></extra>",
+    colorbar=dict(title="%"),
+))
+fig_heat.update_layout(
+    height=420,
+    margin=dict(l=0, r=0, t=10, b=0),
+    xaxis=dict(side="top"),
+)
+st.plotly_chart(fig_heat, use_container_width=True)
+
+insight_card(
+    """
+    Електрикою забезпечені майже всі укриття, водою - більше половини, а от опалення і інтернет
+    наявні лише в третині укриттів Києва. Враховуючи низькі температури минулої зими, це фактично
+    означає, що 2/3 укриттів непридатні для тривалого перебування в холодну пору року.
+    """
+)
+
 chapter_break()
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 6. ДОСТУПНІСТЬ І ВІДКРИТІСТЬ
+# ══════════════════════════════════════════════════════════════════════════════
+section_anchor("access")
+st.title("Доступність і відкритість укриттів")
+
+st.subheader("Доступність для маломобільних груп населення (МГН)")
+
+total_mgn = agg["df_total_mgn"]
+st.metric("Доступних укриттів у Києві", f"{total_mgn}%")
+
+mgn = agg["mgn_report"].sort_values("Доступно для МГН (%)", ascending=False)
+fig_mgn = px.bar(
+    mgn,
+    x="Доступно для МГН (%)",
+    y="Район міста",
+    orientation="h",
+    color="Доступно для МГН (%)",
+    color_continuous_scale="Reds_r",
+    range_color=[0, 100],
+    text="Доступно для МГН (%)",
+    labels={"Доступно для МГН (%)": "%", "Район міста": ""},
+    height=380,
+)
+fig_mgn.update_traces(texttemplate="%{text:.1f}%", textposition="outside")
+fig_mgn.update_layout(
+    coloraxis_showscale=False,
+    margin=dict(l=0, r=80, t=10, b=0),
+)
+st.plotly_chart(fig_mgn, use_container_width=True)
+
+insight_card(
+    """
+    Лише 13,4% київських укриттів доступні для маломобільних груп населення. Розрив між районами
+     вражає: від більше третини у Подільському до ~3% у Шевченківському. Для людей з інвалідністю,
+     літніх людей та батьків із дитячими візками більшість позначок на карті фактично не є реальною можливістю убезпечитися.
+    """
+)
+
+st.divider()
+
+st.subheader("Відкритість укриттів")
+
+oa_percent = st.toggle("Показати у %", key="toggle_oa_percent")
+
+dist_oa = agg["district_open_access"]
+dist_oa["values"] = dist_oa["percent"] if oa_percent else dist_oa["shelter_count"]
+
+oa_sorting_series = (
+    dist_oa[dist_oa["open_access"] == "Постійно відчинене для населення"]
+    .set_index("district")["percent"]
+    .sort_values(ascending=True)
+)
+
+dist_oa["district"] = pd.Categorical(
+    dist_oa["district"],
+    categories=oa_sorting_series.index,
+    ordered=True
+)
+
+dist_oa = dist_oa.sort_values("district")
+
+oa_categories = [
+    "Постійно відчинене для населення",
+    "Для населення у робочий час",
+    "Відчинене для населення лише у разі оповіщення",
+    "Лише для працівників у робочий час",
+    "Безперешкодний доступ не забезпечено"
+]
+
+fig_oa_bar = px.bar(
+    dist_oa,
+    x="values",
+    y="district",
+    color="open_access",
+    category_orders={
+        "open_access": oa_categories
+    },
+    orientation="h",
+    barmode="stack",
+    labels={"values": "% укриттів" if oa_percent else "Кількість", "district": "", "open_access": "Доступ"},
+    height=400,
+)
+fig_oa_bar.update_layout(
+    legend=dict(orientation="h", y=-0.3, title=""),
+    margin=dict(l=0, r=0, t=10, b=60),
+)
+st.plotly_chart(fig_oa_bar, use_container_width=True)
+
+with st.expander("Обмеження, джерела та методологія"):
+    st.markdown(
+        """
+        ##### Що означають ці категорії?
+        * **Постійно відчинене для населення** - доступ вільний у будь-який час доби
+        * **Для населення у робочий час** - доступ обмежений годинами роботи закладу/установи
+        * **Відчинене для населення лише у разі оповіщення** - двері відкриваються тільки під час сигналу тривоги
+        * **Лише для працівників у робочий час** - доступ мають тільки співробітники об'єкта
+        * **Безперешкодний доступ не забезпечено** - вхід технічно ускладнений або заблокований
+        """
+    )
+
+
+info_card(
+    """
+    За законом, порядок використання укриттів (і державних, і приватних) визначають військові
+    адміністрації (стаття 8 Закону України "Про правовий режим воєнного стану"). повинні визначати
+    порядок використання споруд цивільного захисту.<br><br>
+    Зокрема, має бути забезпечено:
+        - готовність до використання;<br><br>
+        - цілодобовий та безперешкодний доступ до них під час повітряної тривоги;<br><br>
+        - відповідальність власника за утримання споруди у належному стані.<br><br>
+    Однак у Києві документ досі не затверджено або не оприлюднено, тому більшість укриттів
+    функціонують за неформальними правилами, визначеними власником.<br><br>
+    Серед зареєстрованих укриттів проводять аудити, проте подання сховищ на облік не обов'язкове -
+    воно ініціюється власником, місцевим самоврядування, ДСНС тощо. Відповідно, є укриття, які ніяк
+    не можна проконтролювати.
+    """
+)
+
+# chapter_break()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 8. ЩО З ЦИМ РОБИТИ
