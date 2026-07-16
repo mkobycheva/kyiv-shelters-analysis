@@ -355,6 +355,11 @@ def image_or_placeholder(path, caption=None, height=240):
     if path and os.path.exists(path):
         st.image(path, caption=caption, use_container_width=True)
     else:
+        show_path = height >= 150
+        path_html = (
+            f'<code style="font-size:10px; word-break:break-all; line-height:1.3;">{path}</code>'
+            if show_path else ""
+        )
         st.markdown(
             f"""
             <div style="
@@ -362,15 +367,19 @@ def image_or_placeholder(path, caption=None, height=240):
                 border: 2px dashed #d0d0d5;
                 border-radius: 10px;
                 display: flex;
+                flex-direction: column;
                 align-items: center;
                 justify-content: center;
+                gap: 4px;
                 text-align: center;
                 color: #9a9aa5;
-                font-size: 13px;
-                padding: 12px;
+                font-size: 12px;
+                padding: 8px;
                 background: #fafafc;
+                overflow: hidden;
             ">
-                📷 TODO: додати фото<br><code style="font-size:11px;">{path}</code>
+                <span>📷 TODO: фото</span>
+                {path_html}
             </div>
             """,
             unsafe_allow_html=True,
@@ -435,7 +444,7 @@ st.title("Чи вміщається Київ в укриття?")
 
 st.divider()
 
-col_intro_text, col_intro_img = st.columns([2, 3])
+col_intro_text, col_intro_img = st.columns([2, 1])
 
 with col_intro_text:
     st.markdown(
@@ -696,34 +705,22 @@ SHELTER_TYPES = [
     },
 ]
 
-CARD_WINDOW = 3
-if "shelter_type_start" not in st.session_state:
-    st.session_state.shelter_type_start = 0
-
-nav_prev, nav_spacer, nav_next = st.columns([1, 10, 1])
-with nav_prev:
-    if st.button("◀", key="shelter_types_prev"):
-        st.session_state.shelter_type_start = max(0, st.session_state.shelter_type_start - 1)
-with nav_next:
-    if st.button("▶", key="shelter_types_next"):
-        st.session_state.shelter_type_start = min(
-            len(SHELTER_TYPES) - CARD_WINDOW, st.session_state.shelter_type_start + 1
-        )
-
-start = st.session_state.shelter_type_start
-visible_types = SHELTER_TYPES[start:start + CARD_WINDOW]
-
-card_cols = st.columns(CARD_WINDOW)
-for col, t in zip(card_cols, visible_types):
-    with col:
-        with st.container(border=True, height=380):
-            image_or_placeholder(t["photo"], height=130)
+def render_type_card(t):
+    with st.container(border=True):
+        col_img, col_text = st.columns([2, 3])
+        with col_img:
+            image_or_placeholder(t["photo"], height=100)
+        with col_text:
             st.markdown(f"**{t['name']}**")
             st.caption(t["description"])
             st.markdown(
                 f"<span style='font-size:12px;color:#666;'>Приклад — {t['example']}</span>",
                 unsafe_allow_html=True,
             )
+
+
+for t in SHELTER_TYPES:
+    render_type_card(t)
 
 st.divider()
 
