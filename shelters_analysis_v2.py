@@ -444,7 +444,7 @@ st.title("Чи вміщається Київ в укриття?")
 
 st.divider()
 
-col_intro_text, col_intro_img = st.columns([2, 1])
+col_intro_text, col_intro_img = st.columns([3, 2])
 
 with col_intro_text:
     st.markdown(
