@@ -58,7 +58,7 @@ span[aria-hidden="true"] {
 }
 
 [data-testid="stExpander"] summary p {
-    font-size: 1.1rem !important;
+    font-size: 1.0rem !important;
     font-weight: 600;
 }
 
