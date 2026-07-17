@@ -393,10 +393,11 @@ def image_or_placeholder(path, caption=None, height=240):
             st.caption(caption)
 
 
-def card_thumbnail(path, height=130):
-    """Fixed-height, cropped thumbnail for compact card rows — unlike
+def card_thumbnail(path, height=150):
+    """Fixed-height thumbnail for compact card rows — unlike
     image_or_placeholder, this never lets a tall/portrait photo stretch
-    the row: the image is cover-cropped into a fixed box instead."""
+    the row: the box height is fixed, and the whole photo is shown
+    letterboxed inside it (object-fit: contain) instead of being cropped."""
     if path and os.path.exists(path):
         with open(path, "rb") as f:
             b64 = base64.b64encode(f.read()).decode()
@@ -404,13 +405,23 @@ def card_thumbnail(path, height=130):
         mime = "jpeg" if ext in ("jpg", "jpeg") else ext
         st.markdown(
             f"""
-            <img src="data:image/{mime};base64,{b64}" style="
+            <div style="
                 width: 100%;
                 height: {height}px;
-                object-fit: cover;
+                background: #eef0f2;
                 border-radius: 10px;
-                display: block;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
             ">
+                <img src="data:image/{mime};base64,{b64}" style="
+                    max-width: 100%;
+                    max-height: 100%;
+                    object-fit: contain;
+                    display: block;
+                ">
+            </div>
             """,
             unsafe_allow_html=True,
         )
@@ -765,9 +776,9 @@ def render_type_card(t, card_idx):
     photo_idx = st.session_state[state_key] % len(photos)
 
     with st.container(border=True):
-        col_img, col_text = st.columns([2, 3])
+        col_img, col_text = st.columns([1, 1])
         with col_img:
-            card_thumbnail(photos[photo_idx], height=130)
+            card_thumbnail(photos[photo_idx], height=150)
             if len(photos) > 1:
                 nav_prev, nav_label, nav_next = st.columns([1, 2, 1])
                 with nav_prev:
