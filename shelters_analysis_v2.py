@@ -676,9 +676,10 @@ SHELTER_TYPES = [
     {
         "name": "Сховища",
         "photos": [
-            "assets/shelter_types/skhovyshche.jpg",
-            "assets/shelter_types/skhovyshche_2.jpg",
-            "assets/shelter_types/skhovyshche_3.jpg",
+            "assets/shelter_types/skhovyshche.png",
+            "assets/shelter_types/skhovyshche_2.png",
+            "assets/shelter_types/skhovyshche_3.png",
+            "assets/shelter_types/skhovyshche_4.png"
         ],
         "description": "Герметичні спеціалізовані споруди, що захищають від ударної хвилі, уламків, радіації, затоплення тощо - найнадійніші з усіх укриттів.",
         "example": "Спеціалізовані глибокі підвали (традиційно - радянські) з герметичними дверима.",
@@ -686,9 +687,9 @@ SHELTER_TYPES = [
     {
         "name": "СПП із захисними властивостями протирадіаційного укриття",
         "photos": [
-            "assets/shelter_types/spp_pru.jpg",
-            "assets/shelter_types/spp_pru_2.jpg",
-            "assets/shelter_types/spp_pru_3.jpg",
+            "assets/shelter_types/spp_pru.png",
+            "assets/shelter_types/spp_pru_2.png",
+            "assets/shelter_types/spp_pru_3.png",
         ],
         "description": "Споруди подвійного призначення (не спроєктовані як укриття, проте зі створеними умовами для тимчасового перебування), що можуть захистити від радіації, ударної хвилі, уламків.",
         "example": "Виробничі приміщення, заклади культури, магазини.",
@@ -696,9 +697,7 @@ SHELTER_TYPES = [
     {
         "name": "СПП із захисними властивостями сховища",
         "photos": [
-            "assets/shelter_types/spp_skhovyshche.jpg",
-            "assets/shelter_types/spp_skhovyshche_2.jpg",
-            "assets/shelter_types/spp_skhovyshche_3.jpg",
+            "assets/shelter_types/spp_skhovyshche.png"
         ],
         "description": "Споруди подвійного призначення, що можуть бути використані як сховища.",
         "example": "Виробничі приміщення, заклади культури, магазини.",
@@ -706,9 +705,12 @@ SHELTER_TYPES = [
     {
         "name": "Найпростіші укриття",
         "photos": [
-            "assets/shelter_types/naiprostishe.jpg",
-            "assets/shelter_types/naiprostishe_2.jpg",
-            "assets/shelter_types/naiprostishe_3.jpg",
+            "assets/shelter_types/naiprostishe.png",
+            "assets/shelter_types/naiprostishe_2.png",
+            "assets/shelter_types/naiprostishe_3.png",
+            "assets/shelter_types/naiprostishe_4.png",
+            "assets/shelter_types/naiprostishe_5.png",
+            "assets/shelter_types/naiprostishe_6.png",
         ],
         "description": "Споруди, в яких можливе тимчасове перебування задля зниження комбінованого ураження від небезпечних чинників.",
         "example": "Метро, тунелі, паркінги, підвали, цокольні поверхи.",
@@ -716,9 +718,8 @@ SHELTER_TYPES = [
     {
         "name": "Первинне (мобільне) укриття",
         "photos": [
-            "assets/shelter_types/pervynne.jpg",
-            "assets/shelter_types/pervynne_2.jpg",
-            "assets/shelter_types/pervynne_3.jpg",
+            "assets/shelter_types/pervynne.png",
+            "assets/shelter_types/pervynne_2.png",
         ],
         "description": "Тимчасові споруди, зведені для захисту від непрямої дії звичайних засобів ураження.",
         "example": "Наземні бетонні споруди.",
@@ -881,62 +882,6 @@ fig_shelter_kind.update_xaxes(
                                                  shelter_kind_dist.groupby("district")["values"].sum().max() * 1.05]
 )
 st.plotly_chart(fig_shelter_kind, use_container_width=True)
-
-
-# with col_location:
-#     st.subheader("Тип локації")
-#     location_type_kyiv = agg["kyiv_location_types"].rename(columns={"location_type": "Тип"})
-#     render_kpi_row("Тип локації", location_type_kyiv)
-#
-#     location_type_percent = st.toggle("Показати у %", key="toggle_location_type_percent")
-#
-#     location_type_dist = agg["district_location_types"].rename(columns={"location_type": "Тип"})
-#     location_type_dist["values"] = location_type_dist["percent"] if location_type_percent else location_type_dist["shelter_count"]
-#     location_sorting_series = (
-#         location_type_dist[location_type_dist["Тип"] == "Заглиблена"]
-#         .set_index("district")["percent"]
-#         .sort_values(ascending=True)
-#     )
-#
-#     location_type_dist["district"] = pd.Categorical(
-#         location_type_dist["district"],
-#         categories=location_sorting_series.index,
-#         ordered=True
-#     )
-#
-#     location_type_dist = location_type_dist.sort_values("district")
-#
-#     location_type_categories = [
-#         "Заглиблена",
-#         "Надземна",
-#         "Напівзаглиблена"
-#     ]
-#
-#     fig_location_type = px.bar(
-#         location_type_dist,
-#         x="values",
-#         y="district",
-#         color="Тип",
-#         category_orders={
-#             "Тип": location_type_categories
-#         },
-#         color_discrete_sequence=["#fa6e6e", "#ddcc77", "#88ccee"],
-#         orientation="h",
-#         barmode="stack",
-#         labels={"values": "% укриттів" if location_type_percent else "Кількість", "district": "Район"},
-#         height=440,
-#     )
-#     fig_location_type.update_layout(
-#         legend=dict(orientation="h", y=-0.3),
-#         margin=dict(l=0, r=0, t=10, b=90)
-#     )
-#     st.plotly_chart(fig_location_type, use_container_width=True)
-#
-#     insight_card(
-#         """
-#         Майже всі укриття Києва є заглибленими, що чудовим сигналом.
-#         """
-#     )
 
 insight_card(
     """
