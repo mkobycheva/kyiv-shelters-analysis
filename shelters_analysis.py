@@ -1175,5 +1175,11 @@ st.markdown(
 
 st.divider()
 
-st.caption("Київська школа економіки · липень 2026")
-st.caption("Питання та фідбек: maria.kobycheva@gmail.com")
+st.markdown(
+    '<p style="text-align:center; color:gray; font-size:0.85rem;">Київська школа економіки · липень 2026</p>',
+    unsafe_allow_html=True,
+)
+st.markdown(
+    '<p style="text-align:center; color:gray; font-size:0.85rem;">Питання та фідбек: maria.kobycheva@gmail.com</p>',
+    unsafe_allow_html=True,
+)
