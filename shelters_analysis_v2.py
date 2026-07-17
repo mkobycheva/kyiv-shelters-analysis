@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 
@@ -349,43 +350,72 @@ def info_card(html_content):
     )
 
 
+def _placeholder_box(path, height):
+    show_path = height >= 150
+    path_html = (
+        f'<code style="font-size:10px; word-break:break-all; line-height:1.3;">{path}</code>'
+        if show_path else ""
+    )
+    st.markdown(
+        f"""
+        <div style="
+            height: {height}px;
+            border: 2px dashed #d0d0d5;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-align: center;
+            color: #9a9aa5;
+            font-size: 12px;
+            padding: 8px;
+            background: #fafafc;
+            overflow: hidden;
+        ">
+            <span>📷 TODO: фото</span>
+            {path_html}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def image_or_placeholder(path, caption=None, height=240):
     """Renders an image if the file exists locally, otherwise a dashed
     placeholder box so the app doesn't crash before real assets are added."""
     if path and os.path.exists(path):
         st.image(path, caption=caption, use_container_width=True)
     else:
-        show_path = height >= 150
-        path_html = (
-            f'<code style="font-size:10px; word-break:break-all; line-height:1.3;">{path}</code>'
-            if show_path else ""
-        )
+        _placeholder_box(path, height)
+        if caption:
+            st.caption(caption)
+
+
+def card_thumbnail(path, height=130):
+    """Fixed-height, cropped thumbnail for compact card rows — unlike
+    image_or_placeholder, this never lets a tall/portrait photo stretch
+    the row: the image is cover-cropped into a fixed box instead."""
+    if path and os.path.exists(path):
+        with open(path, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode()
+        ext = os.path.splitext(path)[1].lstrip(".").lower()
+        mime = "jpeg" if ext in ("jpg", "jpeg") else ext
         st.markdown(
             f"""
-            <div style="
+            <img src="data:image/{mime};base64,{b64}" style="
+                width: 100%;
                 height: {height}px;
-                border: 2px dashed #d0d0d5;
+                object-fit: cover;
                 border-radius: 10px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 4px;
-                text-align: center;
-                color: #9a9aa5;
-                font-size: 12px;
-                padding: 8px;
-                background: #fafafc;
-                overflow: hidden;
+                display: block;
             ">
-                <span>📷 TODO: фото</span>
-                {path_html}
-            </div>
             """,
             unsafe_allow_html=True,
         )
-        if caption:
-            st.caption(caption)
+    else:
+        _placeholder_box(path, height)
 
 
 def section_anchor(anchor_id):
@@ -737,7 +767,7 @@ def render_type_card(t, card_idx):
     with st.container(border=True):
         col_img, col_text = st.columns([2, 3])
         with col_img:
-            image_or_placeholder(photos[photo_idx], height=100)
+            card_thumbnail(photos[photo_idx], height=130)
             if len(photos) > 1:
                 nav_prev, nav_label, nav_next = st.columns([1, 2, 1])
                 with nav_prev:
