@@ -58,7 +58,7 @@ span[aria-hidden="true"] {
 }
 
 [data-testid="stExpander"] summary p {
-    font-size: 1.0rem !important;
+    font-size: 0.95rem !important;
     font-weight: 600;
 }
 
@@ -1175,5 +1175,5 @@ st.markdown(
 
 st.divider()
 
-st.caption("Марія Кобичева, Дарина Кальченко, Діана Алдошина, Лілія Червонецька, Валерія Михайлишина · Київська школа економіки · липень 2026")
-st.caption("Питання та фідбек: maria.kobycheva@gmail.com")
+st.caption("Київська школа економіки · липень 2026", horizontal_alignment="center")
+st.caption("Питання та фідбек: maria.kobycheva@gmail.com", horizontal_alignment="center")
