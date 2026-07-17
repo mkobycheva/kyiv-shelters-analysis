@@ -712,6 +712,8 @@ with col_area_text:
 section_anchor("types")
 st.title("Типи укриттів")
 
+st.divider()
+
 st.markdown(
     """
     В Києві є **п'ять типів** укриттів.
