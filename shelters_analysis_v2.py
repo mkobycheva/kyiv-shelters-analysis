@@ -775,8 +775,8 @@ def render_type_card(t, card_idx):
         st.session_state[state_key] = 0
     photo_idx = st.session_state[state_key] % len(photos)
 
-    with st.container(border=True):
-        col_img, col_text = st.columns([2, 3])
+    with st.container(height=180, border=True):
+        col_img, col_text = st.columns([1, 2])
         with col_img:
             card_thumbnail(photos[photo_idx], width=260, height=180)
             if len(photos) > 1:
