@@ -393,7 +393,7 @@ def image_or_placeholder(path, caption=None, height=240):
             st.caption(caption)
 
 
-def card_thumbnail(path, height=150):
+def card_thumbnail(path, width=200, height=150):
     """Fixed-height thumbnail for compact card rows — unlike
     image_or_placeholder, this never lets a tall/portrait photo stretch
     the row: the box height is fixed, and the whole photo is shown
@@ -406,7 +406,7 @@ def card_thumbnail(path, height=150):
         st.markdown(
             f"""
             <div style="
-                width: 100%;
+                width: {width}px;
                 height: {height}px;
                 background: #eef0f2;
                 border-radius: 10px;
@@ -778,7 +778,7 @@ def render_type_card(t, card_idx):
     with st.container(border=True):
         col_img, col_text = st.columns([1, 1])
         with col_img:
-            card_thumbnail(photos[photo_idx], height=150)
+            card_thumbnail(photos[photo_idx], width=260, height=180)
             if len(photos) > 1:
                 nav_prev, nav_label, nav_next = st.columns([1, 2, 1])
                 with nav_prev:
